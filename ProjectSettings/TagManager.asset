@@ -3,7 +3,12 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 2
-  tags: []
+  tags:
+  - Cell
+  - ShipCell2
+  - ShipCell3
+  - ShipCell4
+  - ShipCell5
   layers:
   - Default
   - TransparentFX
@@ -11,9 +16,9 @@ TagManager:
   - 
   - Water
   - UI
-  - 
-  - 
-  - 
+  - Ship
+  - PlayerCell
+  - EnemyCell
   - 
   - 
   - 
@@ -40,6 +45,9 @@ TagManager:
   m_SortingLayers:
   - name: Background
     uniqueID: 2665770363
+    locked: 0
+  - name: Gameobject
+    uniqueID: 2019518795
     locked: 0
   - name: Default
     uniqueID: 0
