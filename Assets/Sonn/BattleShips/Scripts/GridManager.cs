@@ -26,7 +26,7 @@ namespace Sonn.BattleShips
             {
                 for (int y = 0; y < m_col; y++)
                 {
-                    var cell = Instantiate(cellPrefab, Vector3.zero, Quaternion.identity);
+                    GameObject cell = Instantiate(cellPrefab, Vector3.zero, Quaternion.identity);
                     Vector3 cellPos = new(x * m_cellDistance, y * m_cellDistance, 0);
                     cell.transform.position = cellPos;
                     cell.transform.SetParent(transform);

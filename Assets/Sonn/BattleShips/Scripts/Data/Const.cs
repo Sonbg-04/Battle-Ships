@@ -22,6 +22,7 @@ namespace Sonn.BattleShips
         public const string SFX_VOlUME = "SFXVolume";
 
         public const string MAIN_MENU_SCENE = "Mainmenu";
+        public const string SET_PLACESHIPS_SCENE = "Setplaceships";
         
     }
 }

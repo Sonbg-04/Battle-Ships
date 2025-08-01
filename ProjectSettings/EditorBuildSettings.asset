@@ -8,4 +8,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Sonn/BattleShips/Scenes/Mainmenu.unity
     guid: 2cda990e2423bbf4892e6590ba056729
+  - enabled: 1
+    path: Assets/Sonn/BattleShips/Scenes/Setplaceships.unity
+    guid: 56589bc64d6b36e48abad71f2708f00d
   m_configObjects: {}

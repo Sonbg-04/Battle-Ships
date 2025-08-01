@@ -6,7 +6,7 @@ namespace Sonn.BattleShips
 {
     public class Ship : MonoBehaviour
     {
-        public bool isSunk;
+        public bool isSunk, isSelectedShip;
         public int shipSize;
         
     }
