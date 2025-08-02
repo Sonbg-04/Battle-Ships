@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static UnityEditor.PlayerSettings;
 
 namespace Sonn.BattleShips
 {
@@ -8,78 +9,57 @@ namespace Sonn.BattleShips
     {
         public GameObject cellPrefab;
         public Vector3 offsetPos, offsetScale;
-        
+        public Vector2 minBound, maxBound;
+
         private int m_row = 10, m_col = 10;
         private float m_cellDistance = -0.9f;
         private Cell[,] m_cells;
+        private List<Cell> m_cellList;
 
+        private void Awake()
+        {
+            m_cellList = new();
+            m_cells = new Cell[m_row, m_col];
+        }
         private void Start()
         {
             DrawGridMap();
             OffsetOfGridMap();
         }
-
         private void DrawGridMap()
         {
-            m_cells = new Cell[m_row, m_col];
+            if (IsComponentNull())
+            {
+                return;
+            }
+
             for (int x = 0; x < m_row; x++)
             {
                 for (int y = 0; y < m_col; y++)
                 {
-                    GameObject cell = Instantiate(cellPrefab, Vector3.zero, Quaternion.identity);
+                    var cell = Instantiate(cellPrefab, Vector3.zero, Quaternion.identity);
                     Vector3 cellPos = new(x * m_cellDistance, y * m_cellDistance, 0);
                     cell.transform.position = cellPos;
                     cell.transform.SetParent(transform);
                     cell.name = "Cell[" + x + "]" + "[" + y + "]";
 
-                    Cell c = cell.GetComponent<Cell>();
+                    var c = cell.GetComponent<Cell>();
                     if (c == null)
                     {
-                        Debug.LogWarning("Có cell bị rỗng. Hãy kiểm tra lại!");
+                        Debug.LogWarning($"Cell tại [{x}, {y}] bị rỗng!");
                         continue;
                     }
 
                     m_cells[x, y] = c;
+                    m_cells[x, y].cellPosOnGrid = new Vector2(
+                    Mathf.RoundToInt(m_cells[x, y].transform.position.x / m_cellDistance),
+                    Mathf.RoundToInt(m_cells[x, y].transform.position.y / m_cellDistance));
+
+                    m_cellList.Add(m_cells[x, y]);
                 }
             }
+            Debug.Log($"Có {m_cellList.Count} ô được lưu vào list cell!");
         }
-
-        public void CheckCollisionOfShipWithCell()
-        {
-            if (IsComponentNull())
-            {
-                return;
-            }    
-            for (int x = 0; x < m_row; x++)
-            {
-                for (int y = 0; y < m_col; y++)
-                {
-                    Cell c = m_cells[x, y];
-                    if (c == null)
-                    {
-                        Debug.LogWarning("Trong m_cells không có 1 cell nào đó. Hãy kiểm tra lại!");
-                        continue;
-                    }    
-                    Vector2 centerPos = c.transform.position;
-                    Vector2 cellSize = c.GetComponent<Collider2D>().bounds.size;
-
-                    Collider2D col = Physics2D.OverlapBox(centerPos, cellSize,
-                                     0, LayerMask.GetMask(Const.SHIP_LAYER));
-
-                    if (col != null)
-                    {
-                        Debug.Log("Ship đã được đặt lên trên Cell!");
-                        c.hasShip = true;
-                    }
-                    else
-                    {
-                        Debug.Log("Ship đã rời va chạm Cell!");
-                        c.hasShip = false;
-                    }    
-                }    
-            }    
-        }    
-
         private void OffsetOfGridMap()
         {
             transform.position += offsetPos;
@@ -90,7 +70,6 @@ namespace Sonn.BattleShips
                 transform.localScale.z
                 );
         }
-
         public bool IsComponentNull()
         {
             bool check = m_cells == null;
@@ -100,5 +79,23 @@ namespace Sonn.BattleShips
             }
             return check;
         }
+        private void OnDrawGizmos()
+        {
+            Gizmos.color = Color.red;
+
+            Vector3 sizeBox = new(
+                Mathf.Abs(maxBound.x - minBound.x),
+                Mathf.Abs(maxBound.y - minBound.y),
+                0);
+
+            Vector3 centerBox = new(
+                ((minBound.x + maxBound.x) / 2f),
+                ((minBound.y + maxBound.y) / 2f),
+                0);
+
+            Gizmos.DrawWireCube(centerBox, sizeBox);
+
+        }
+    
     }
 }

@@ -12,9 +12,9 @@ GameObject:
   - component: {fileID: 7669037331990346173}
   - component: {fileID: 651061717735778851}
   - component: {fileID: 7947039804829893560}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Cell
-  m_TagString: Cell
+  m_TagString: PlayerCell
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -76,7 +76,7 @@ SpriteRenderer:
   m_SortingLayer: -1
   m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: 446099e3fe4fc5b469b0ee5cd32b3bef, type: 3}
-  m_Color: {r: 0.53638804, g: 0.20747076, b: 0.20747076, a: 1}
+  m_Color: {r: 0.72506726, g: 0.5610865, b: 0.26090693, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -144,3 +144,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   hasShip: 0
+  isHit: 0
+  countHit: 0
+  cellPosOnGrid: {x: 0, y: 0}

@@ -8,45 +8,39 @@ namespace Sonn.BattleShips
     {
         public GameObject[] shipPrefabs;
         public Vector3 offsetPos;
-        public Collider2D dockCollider;
+        public int shipCount;
 
-        private GridManager m_gridManager;
         private float m_shipDistance = 1.5f;
-        private Ship m_selectShip;
-        private List<Ship> m_shipList = new();
+        private Ship m_selectedShip;
+        private List<Ship> m_shipList;
+        private Vector3 m_chosenPos;
+        private GridManager m_gridMng;
+        private Manage m_manage;
 
         private void Awake()
         {
-            m_gridManager = FindObjectOfType<GridManager>();
+            m_selectedShip = null;
+            m_chosenPos = Vector3.zero;
+            m_gridMng = FindObjectOfType<GridManager>();
+            m_shipList = new();
+            m_manage = FindObjectOfType<Manage>();
         }
-
         private void Start()
         {
-            m_selectShip = null;
             SetShipOnScreen();
             OffsetOfShips();
+            shipCount = m_shipList.Count;
         }
-
         private void Update()
         {
             if (Input.GetMouseButtonDown(0))
             {
-                ClickSelectOnShip();
+                HandleMouseClick();
             }
-        }
-
-        public bool IsComponentNull()
-        {
-            bool check = m_gridManager == null || shipPrefabs == null;
-            if (check)
-            {
-                Debug.LogWarning("Có component bị rỗng. Hãy kiểm tra lại!");
-            }
-            return check;
         }
         private void SetShipOnScreen()
         {
-            if (IsComponentNull() || shipPrefabs.Length <= 0)
+            if (shipPrefabs.Length <= 0 || IsComponentNull())
             {
                 return;
             }
@@ -74,50 +68,130 @@ namespace Sonn.BattleShips
         private void OffsetOfShips()
         {
             transform.position += offsetPos;
-        }    
-        private void ClickSelectOnShip()
-        {
-            if (IsComponentNull())
-            {
-                return;
-            }  
-            
-            RaycastHit2D ray = Physics2D.Raycast(Camera.main.ScreenToWorldPoint(Input.mousePosition),
-                Vector2.zero);
-            if (ray.collider == null)
-            {
-                return;
-            }
-            SelectShipFromDock(ray);
         }
-        private void SelectShipFromDock(RaycastHit2D hit)
+        private void HandleMouseClick()
         {
             if (IsComponentNull())
             {
                 return;
             }
 
-            Ship ship = hit.collider.GetComponent<Ship>();
-            if (ship == null || !dockCollider.OverlapPoint(hit.point))
+            Vector3 mouseWorldPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            RaycastHit2D hit = Physics2D.Raycast(mouseWorldPos, Vector2.zero);
+
+            if (hit.collider == null)
             {
                 return;
             }
-            if (!ship.isSelectedShip)
+
+            if (hit.collider.CompareTag(Const.PLAYER_CELL_TAG))
             {
-                m_selectShip = ship;
-                m_selectShip.isSelectedShip = true;
-                Debug.Log($"Chọn {m_selectShip.name}!");
+                PlaceShipOnGrid(hit);
+            }
+            else if (hit.collider.GetComponent<Ship>() != null)
+            {
+                SelectShip(hit);
+            }
+        }
+        private void SelectShip(RaycastHit2D hit)
+        {
+            Ship clickedShip = hit.collider.GetComponent<Ship>();
+            if (clickedShip == null || IsComponentNull())
+                return;
+
+            if (clickedShip.isPlacedShip)
+            {
+                Debug.Log($"{clickedShip.name} đã được đặt rồi!");
+                return;
+            }
+
+            foreach (var s in m_shipList)
+            {
+                s.isSelectedShip = false;
+            }
+
+            m_selectedShip = clickedShip;
+            m_selectedShip.isSelectedShip = true;
+            Debug.Log($"Đã chọn tàu {m_selectedShip.name}!");   
+        }
+        private void PlaceShipOnGrid(RaycastHit2D hit)
+        {
+            if (hit.collider == null || 
+                !hit.collider.CompareTag(Const.PLAYER_CELL_TAG) || 
+                IsComponentNull())
+            {
+                return;
+            }
+            
+            if (hit.collider.CompareTag(Const.PLAYER_CELL_TAG))
+            {
+                Debug.Log("Hãy chọn tàu để click vào lưới!");
+                return;
+            }    
+
+            Cell cell = hit.collider.GetComponent<Cell>();
+            if (cell == null)
+            {
+                return;
+            }
+
+            m_chosenPos = hit.transform.position;
+
+            var oldCells = m_selectedShip.GetOccupiedCells();
+            if (oldCells != null)
+            {
+                foreach (var oldCell in oldCells)
+                {
+                    oldCell.hasShip = false;
+                    oldCell.OccupiedShip = null;
+                }
+            }   
+            
+            m_selectedShip.MoveShip(m_chosenPos);
+            if (m_selectedShip.isPlacedShip)
+            {
+                var newCells = m_selectedShip.GetOccupiedCells();
+                foreach (var newCell in newCells)
+                {
+                    newCell.hasShip = true;
+                    newCell.OccupiedShip = m_selectedShip;
+                }
+
+                Debug.Log($"{m_selectedShip.name} đã đặt lên lưới!");
+                m_selectedShip.isSunkShip = false;
+                Debug.Log($"Trạng thái của {m_selectedShip.name}: {(m_selectedShip.isSunkShip ? "Chìm" : "Nổi")}");
+                m_selectedShip.isSelectedShip = false;
+                shipCount--;
+                m_selectedShip = null;
+                if (shipCount <= 0)
+                {
+                    Debug.Log("Bạn đã đặt hết tàu!");
+                    m_manage.playGameBtn.gameObject.SetActive(true);
+                    return;
+                }
             }
             else
             {
-                Debug.Log($"{m_selectShip.name} đã được chọn. Hãy đặt vào lưới!");
-                PlaceShipOnGrid(hit);
-            }    
-
-        }    
-        private void PlaceShipOnGrid(RaycastHit2D hit)
+                Debug.Log("Vị trí không hợp lệ. Hãy đặt lại!");
+                m_chosenPos = Vector3.zero;
+                return;
+            }      
+        }
+        public bool IsComponentNull()
         {
-            
+            bool check = m_gridMng == null || m_manage == null;
+            if (check)
+            {
+                Debug.LogWarning("Có component bị rỗng. Hãy kiểm tra lại!");
+            }
+            return check;
+        }
+        public void RotateShip()
+        {
+            if (m_selectedShip != null && m_selectedShip.isSelectedShip)
+            {
+                m_selectedShip.RotateShip();
+            }    
         }    
     }
 }

@@ -4,11 +4,12 @@
 TagManager:
   serializedVersion: 2
   tags:
-  - Cell
   - ShipCell2
   - ShipCell3
   - ShipCell4
   - ShipCell5
+  - PlayerCell
+  - EnemyCell
   layers:
   - Default
   - TransparentFX
@@ -17,8 +18,8 @@ TagManager:
   - Water
   - UI
   - Ship
-  - PlayerCell
-  - EnemyCell
+  - Cell
+  - 
   - 
   - 
   - 

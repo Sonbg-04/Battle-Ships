@@ -17,7 +17,6 @@ namespace Sonn.BattleShips
                 PlayerPrefs.SetInt(key, 0);
             }
         }
-
         public static bool GetBool(string key)
         {
             int check = PlayerPrefs.GetInt(key);
@@ -31,13 +30,11 @@ namespace Sonn.BattleShips
             }
             return false;
         }
-
         public static float MusicVolume
         {
             get => PlayerPrefs.GetFloat(Const.MUSIC_VOLUME, 0.3f);
             set => PlayerPrefs.SetFloat(Const.MUSIC_VOLUME, value);
         }
-
         public static float SfxVolume
         {
             get => PlayerPrefs.GetFloat(Const.SFX_VOlUME, 0.5f);
