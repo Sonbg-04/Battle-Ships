@@ -10,9 +10,5 @@ namespace Sonn.BattleShips
         public int countHit;
         public Vector2 cellPosOnGrid;
 
-        private Ship m_occupiedShip;
-
-        public Ship OccupiedShip { set => m_occupiedShip = value; }
-
     }
 }

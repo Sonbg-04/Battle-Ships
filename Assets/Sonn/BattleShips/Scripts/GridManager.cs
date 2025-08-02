@@ -16,6 +16,8 @@ namespace Sonn.BattleShips
         private Cell[,] m_cells;
         private List<Cell> m_cellList;
 
+        public List<Cell> CellList { get => m_cellList; }
+
         private void Awake()
         {
             m_cellList = new();

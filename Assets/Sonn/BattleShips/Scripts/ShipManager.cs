@@ -10,7 +10,7 @@ namespace Sonn.BattleShips
         public Vector3 offsetPos;
         public int shipCount;
 
-        private float m_shipDistance = 1.5f;
+        private float m_shipDistance = 1.3f;
         private Ship m_selectedShip;
         private List<Ship> m_shipList;
         private Vector3 m_chosenPos;
@@ -108,10 +108,12 @@ namespace Sonn.BattleShips
             foreach (var s in m_shipList)
             {
                 s.isSelectedShip = false;
+                s.StopFlashing();
             }
 
             m_selectedShip = clickedShip;
             m_selectedShip.isSelectedShip = true;
+            m_selectedShip.StartFlashing();
             Debug.Log($"Đã chọn tàu {m_selectedShip.name}!");   
         }
         private void PlaceShipOnGrid(RaycastHit2D hit)
@@ -123,7 +125,8 @@ namespace Sonn.BattleShips
                 return;
             }
             
-            if (hit.collider.CompareTag(Const.PLAYER_CELL_TAG))
+            if (hit.collider.CompareTag(Const.PLAYER_CELL_TAG) 
+                && m_selectedShip == null)
             {
                 Debug.Log("Hãy chọn tàu để click vào lưới!");
                 return;
@@ -136,47 +139,69 @@ namespace Sonn.BattleShips
             }
 
             m_chosenPos = hit.transform.position;
-
-            var oldCells = m_selectedShip.GetOccupiedCells();
-            if (oldCells != null)
-            {
-                foreach (var oldCell in oldCells)
-                {
-                    oldCell.hasShip = false;
-                    oldCell.OccupiedShip = null;
-                }
-            }   
-            
             m_selectedShip.MoveShip(m_chosenPos);
-            if (m_selectedShip.isPlacedShip)
+
+            var newCells = m_selectedShip.GetOccupiedCells();
+            if (IsShipNextToAnotherShip(newCells))
             {
-                var newCells = m_selectedShip.GetOccupiedCells();
+                Debug.Log("Không được đặt tàu cạnh nhau!");
+                m_selectedShip.StartFlashing();
+                return;
+            }
+            else
+            {
                 foreach (var newCell in newCells)
                 {
                     newCell.hasShip = true;
-                    newCell.OccupiedShip = m_selectedShip;
                 }
 
                 Debug.Log($"{m_selectedShip.name} đã đặt lên lưới!");
-                m_selectedShip.isSunkShip = false;
-                Debug.Log($"Trạng thái của {m_selectedShip.name}: {(m_selectedShip.isSunkShip ? "Chìm" : "Nổi")}");
+
                 m_selectedShip.isSelectedShip = false;
+                m_selectedShip.isSunkShip = false;
+                m_selectedShip.StopFlashing();
+
+                Debug.Log($"Trạng thái của {m_selectedShip.name}: {(m_selectedShip.isSunkShip ? "Chìm" : "Nổi")}");
+                
                 shipCount--;
-                m_selectedShip = null;
                 if (shipCount <= 0)
                 {
                     Debug.Log("Bạn đã đặt hết tàu!");
                     m_manage.playGameBtn.gameObject.SetActive(true);
-                    return;
                 }
+
             }
-            else
-            {
-                Debug.Log("Vị trí không hợp lệ. Hãy đặt lại!");
-                m_chosenPos = Vector3.zero;
-                return;
-            }      
+
+            m_selectedShip = null;
+            m_chosenPos = Vector3.zero;
         }
+        private bool IsShipNextToAnotherShip(List<Cell> occupiedCells)
+        {
+            foreach (var cell in occupiedCells)
+            {
+                Vector2 cellPos = cell.cellPosOnGrid;
+                for (int x = -1; x <= 1; x++)
+                {
+                    for (int y = -1; y <= 1; y++)
+                    {
+                        if (x == 0 && y == 0)
+                        {
+                            continue;
+                        }
+                        Vector2 neighborCellPos = new(cellPos.x + x, cellPos.y + y);
+                        foreach (var c in m_gridMng.CellList)
+                        {
+                            if (c.cellPosOnGrid == neighborCellPos 
+                                && c.hasShip)
+                            {
+                                return true;
+                            }    
+                        }    
+                    }
+                }
+            }    
+            return false;
+        }    
         public bool IsComponentNull()
         {
             bool check = m_gridMng == null || m_manage == null;

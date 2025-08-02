@@ -6,22 +6,61 @@ namespace Sonn.BattleShips
 {
     public class Ship : MonoBehaviour, IComponentChecking
     {
-        public bool isSunkShip, isSelectedShip, isPlacedShip, isRotatedShip;
+        public bool isSunkShip, isSelectedShip, 
+                    isPlacedShip, isRotatedShip;
         public int shipSize;
         public Vector3 offsetPos;
 
         private Manage m_manage;
         private GridManager m_gridMng;
         private List<Cell> m_occupiedCells;
-        private int m_rotateCounter;
+        private int m_rotateCounter = 0;
+        private Coroutine m_coroutine;
 
         private void Awake()
         {
             m_manage = FindObjectOfType<Manage>();
             m_gridMng = FindObjectOfType<GridManager>();
             m_occupiedCells = new();
+            m_coroutine = null;
         }
-        // Add ô mà tàu đã chiếm
+        private void SetAlphaShip(float alpha)
+        {
+            SpriteRenderer sp = GetComponentInChildren<SpriteRenderer>();
+            if (sp != null)
+            {
+                Color cl = sp.color;
+                cl.a = alpha;
+                sp.color = cl;
+            }
+        }
+        public void StartFlashing()
+        {
+            if (m_coroutine == null)
+            {
+                m_coroutine = StartCoroutine(FlashCoroutine());
+            }    
+            
+        }
+        public void StopFlashing()
+        {
+            if (m_coroutine != null)
+            {
+                StopCoroutine(m_coroutine);
+                SetAlphaShip(1f);
+                m_coroutine = null;
+            }    
+        }
+        IEnumerator FlashCoroutine()
+        {
+            while (true)
+            {
+                SetAlphaShip(0.5f);
+                yield return new WaitForSeconds(0.2f);
+                SetAlphaShip(1f);
+                yield return new WaitForSeconds(0.2f);
+            }
+        }    
         public List<Cell> GetOccupiedCells()
         {
             m_occupiedCells.Clear();
@@ -51,7 +90,6 @@ namespace Sonn.BattleShips
             }
             return m_occupiedCells;
         }
-        // Đặt tàu
         public void MoveShip(Vector3 pos)
         {
             if (IsComponentNull())
@@ -69,10 +107,13 @@ namespace Sonn.BattleShips
             }
 
             Physics2D.SyncTransforms();
-
-            isPlacedShip = IsWithInGridBounds() && !CheckForOverlappingShips();
+            
+            if (IsWithInGridBounds() && !CheckForOverlappingShips())
+            {
+                isPlacedShip = true;
+                return;
+            }
         }
-        // Kiểm tra tàu có nằm trong vùng giới hạn của lưới
         private bool IsWithInGridBounds()
         {
             Renderer rd = GetComponentInChildren<Renderer>();
@@ -87,7 +128,6 @@ namespace Sonn.BattleShips
                 && b.min.y >= m_gridMng.minBound.y 
                 && b.max.y <= m_gridMng.maxBound.y;
         }
-        // Kiểm tra tàu chồng lên nhau
         private bool CheckForOverlappingShips()
         {
             bool check = false;
