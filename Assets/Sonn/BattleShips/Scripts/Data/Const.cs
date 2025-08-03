@@ -6,7 +6,8 @@ namespace Sonn.BattleShips
 {
     public class Const
     {
-        public const string SHIP_LAYER = "Ship";
+        public const string SHIP_PLAYER_LAYER = "PlayerShip";
+        public const string SHIP_ENEMY_LAYER = "EnemyShip";
         public const string CELL_LAYER = "Cell";
 
         public const string SHIP_CELL_2_TAG = "ShipCell2";
@@ -25,7 +26,13 @@ namespace Sonn.BattleShips
 
         public const string MAIN_MENU_SCENE = "Mainmenu";
         public const string SET_PLACESHIPS_SCENE = "Setplaceships";
-        
+        public const string GAME_PLAY_SCENE = "Gameplay";
+
+        public const string MAIN_MENU_TAG = "Mainmenu";
+        public const string SET_PLACESHIPS_TAG = "Setplaceships";
+        public const string GAME_PLAY_TAG = "Gameplay";
+
+
     }
 }
 

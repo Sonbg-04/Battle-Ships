@@ -12,7 +12,6 @@ namespace Sonn.BattleShips
         public Vector3 offsetPos;
 
         private Manage m_manage;
-        private GridManager m_gridMng;
         private List<Cell> m_occupiedCells;
         private int m_rotateCounter = 0;
         private Coroutine m_coroutine;
@@ -20,7 +19,6 @@ namespace Sonn.BattleShips
         private void Awake()
         {
             m_manage = FindObjectOfType<Manage>();
-            m_gridMng = FindObjectOfType<GridManager>();
             m_occupiedCells = new();
             m_coroutine = null;
         }
@@ -108,13 +106,8 @@ namespace Sonn.BattleShips
 
             Physics2D.SyncTransforms();
             
-            if (IsWithInGridBounds() && !CheckForOverlappingShips())
-            {
-                isPlacedShip = true;
-                return;
-            }
         }
-        private bool IsWithInGridBounds()
+        public bool IsWithInGridBounds()
         {
             Renderer rd = GetComponentInChildren<Renderer>();
             if (rd == null)
@@ -123,12 +116,12 @@ namespace Sonn.BattleShips
             }
 
             Bounds b = rd.bounds;
-            return b.min.x >= m_gridMng.minBound.x 
-                && b.max.x <= m_gridMng.maxBound.x
-                && b.min.y >= m_gridMng.minBound.y 
-                && b.max.y <= m_gridMng.maxBound.y;
+            return b.min.x >= GridManager.Ins.minBound.x 
+                && b.max.x <= GridManager.Ins.maxBound.x
+                && b.min.y >= GridManager.Ins.minBound.y 
+                && b.max.y <= GridManager.Ins.maxBound.y;
         }
-        private bool CheckForOverlappingShips()
+        public bool CheckForOverlappingShips()
         {
             bool check = false;
             Collider2D[] shipParts = GetComponentsInChildren<Collider2D>();
@@ -142,7 +135,7 @@ namespace Sonn.BattleShips
                 Vector2 sizePos = part.bounds.size;
                 Collider2D[] hits = Physics2D.OverlapBoxAll(
                     centerPos, sizePos, 
-                    0, LayerMask.GetMask(Const.SHIP_LAYER));
+                    0, LayerMask.GetMask(Const.SHIP_PLAYER_LAYER));
 
                 foreach (var hit in hits)
                 {
@@ -157,7 +150,7 @@ namespace Sonn.BattleShips
         }
         public bool IsComponentNull()
         {
-            bool check = m_manage == null || m_gridMng == null;
+            bool check = m_manage == null || GridManager.Ins == null;
             if (check)
             {
                 Debug.LogWarning("Có component bị rỗng. Hãy kiểm tra lại!");
@@ -166,9 +159,21 @@ namespace Sonn.BattleShips
         }
         public void RotateShip()
         {
-            transform.Rotate(Vector3.forward, -90f);
+            float rotationZ = -90f;
+            transform.Rotate(Vector3.forward, rotationZ);
+
+            if (isRotatedShip)
+            {
+                transform.position -= offsetPos;
+            }
+            else
+            {
+                transform.position += offsetPos;
+            }
+
             m_rotateCounter++;
             isRotatedShip = m_rotateCounter % 2 != 0;
-        }    
+        }
+
     }
 }

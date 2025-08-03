@@ -16,7 +16,6 @@ namespace Sonn.BattleShips
             }    
             return check;
         }
-
         public void OnPlay()
         {
             if (IsComponentNull())

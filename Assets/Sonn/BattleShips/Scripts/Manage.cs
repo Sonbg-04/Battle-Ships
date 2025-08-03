@@ -10,14 +10,9 @@ namespace Sonn.BattleShips
     {
         public Button playGameBtn;
 
-        private ShipManager m_shipMng;
-        private void Awake()
-        {
-            m_shipMng = FindObjectOfType<ShipManager>();
-        }
         public bool IsComponentNull()
         {
-            bool check = AudioManager.Ins == null || m_shipMng == null;
+            bool check = AudioManager.Ins == null || ShipManager.Ins == null;
             if (check)
             {
                 Debug.LogWarning("Có component bị rỗng. Hãy kiểm tra lại!");
@@ -31,6 +26,7 @@ namespace Sonn.BattleShips
                 return;
             }
             AudioManager.Ins.PlaySFX(AudioManager.Ins.buttonClickSource);
+            SceneManager.LoadScene(Const.GAME_PLAY_SCENE);
         }
         public void Rotate()
         {
@@ -39,7 +35,7 @@ namespace Sonn.BattleShips
                 return;
             }
             AudioManager.Ins.PlaySFX(AudioManager.Ins.buttonClickSource);
-            m_shipMng.RotateShip();
+            ShipManager.Ins.RotateShip();
         }
         public void Back()
         {
@@ -49,6 +45,18 @@ namespace Sonn.BattleShips
             }
             AudioManager.Ins.PlaySFX(AudioManager.Ins.buttonClickSource);
             SceneManager.LoadScene(Const.MAIN_MENU_SCENE);
+
+            GameObject[] objs = FindObjectsOfType<GameObject>();
+            foreach (var obj in objs)
+            {
+                if (obj != null)
+                {
+                    if (obj.CompareTag(Const.SET_PLACESHIPS_TAG))
+                    {
+                        Destroy(obj);
+                    }    
+                }    
+            }
         }    
     }
 }

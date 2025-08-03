@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: -4199207443043697082}
   - component: {fileID: 4084667370190971378}
   - component: {fileID: 8740210577593184106}
+  - component: {fileID: -8021178508323728137}
   m_Layer: 6
   m_Name: Ship_3
   m_TagString: ShipCell3
@@ -174,5 +175,20 @@ MonoBehaviour:
   isSunkShip: 0
   isSelectedShip: 0
   isPlacedShip: 0
+  isRotatedShip: 0
   shipSize: 3
   offsetPos: {x: 0, y: 0, z: 0}
+--- !u!114 &-8021178508323728137
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7289382694131385152}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 33e4f7cd198bd15478b2d35ac41e6554, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  isBattle: 0
+  offsetNextScenePos: {x: -0.9, y: 0, z: 0}

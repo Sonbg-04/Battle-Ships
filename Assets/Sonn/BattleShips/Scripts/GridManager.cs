@@ -5,8 +5,10 @@ using static UnityEditor.PlayerSettings;
 
 namespace Sonn.BattleShips
 {
-    public class GridManager : MonoBehaviour, IComponentChecking
+    public class GridManager : MonoBehaviour
     {
+        public static GridManager Ins;
+
         public GameObject cellPrefab;
         public Vector3 offsetPos, offsetScale;
         public Vector2 minBound, maxBound;
@@ -17,11 +19,15 @@ namespace Sonn.BattleShips
         private List<Cell> m_cellList;
 
         public List<Cell> CellList { get => m_cellList; }
+        public int Row { get => m_row; }
+        public int Col { get => m_col; }
+        public float CellDistance { get => m_cellDistance; }
 
         private void Awake()
         {
             m_cellList = new();
             m_cells = new Cell[m_row, m_col];
+            MakeSingleton();
         }
         private void Start()
         {
@@ -30,11 +36,6 @@ namespace Sonn.BattleShips
         }
         private void DrawGridMap()
         {
-            if (IsComponentNull())
-            {
-                return;
-            }
-
             for (int x = 0; x < m_row; x++)
             {
                 for (int y = 0; y < m_col; y++)
@@ -72,15 +73,6 @@ namespace Sonn.BattleShips
                 transform.localScale.z
                 );
         }
-        public bool IsComponentNull()
-        {
-            bool check = m_cells == null;
-            if (check)
-            {
-                Debug.LogWarning("Có component bị rỗng. Hãy kiểm tra lại!");
-            }
-            return check;
-        }
         private void OnDrawGizmos()
         {
             Gizmos.color = Color.red;
@@ -98,6 +90,18 @@ namespace Sonn.BattleShips
             Gizmos.DrawWireCube(centerBox, sizeBox);
 
         }
+        private void MakeSingleton()
+        {
+            if (Ins == null)
+            {
+                Ins = this;
+                DontDestroyOnLoad(this);
+            }
+            else
+            {
+                Destroy(gameObject);
+            }    
+        }    
     
     }
 }

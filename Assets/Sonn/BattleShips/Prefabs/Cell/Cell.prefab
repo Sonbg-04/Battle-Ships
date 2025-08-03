@@ -12,7 +12,8 @@ GameObject:
   - component: {fileID: 7669037331990346173}
   - component: {fileID: 651061717735778851}
   - component: {fileID: 7947039804829893560}
-  m_Layer: 7
+  - component: {fileID: 7911108396919059402}
+  m_Layer: 8
   m_Name: Cell
   m_TagString: PlayerCell
   m_Icon: {fileID: 0}
@@ -76,7 +77,7 @@ SpriteRenderer:
   m_SortingLayer: -1
   m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: 446099e3fe4fc5b469b0ee5cd32b3bef, type: 3}
-  m_Color: {r: 0.72506726, g: 0.5610865, b: 0.26090693, a: 1}
+  m_Color: {r: 0.7412399, g: 0.13885754, b: 0.5514182, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -147,3 +148,17 @@ MonoBehaviour:
   isHit: 0
   countHit: 0
   cellPosOnGrid: {x: 0, y: 0}
+--- !u!114 &7911108396919059402
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4427575922521028605}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 33e4f7cd198bd15478b2d35ac41e6554, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  isBattle: 0
+  offsetNextScenePos: {x: -0.9, y: 0, z: 0}

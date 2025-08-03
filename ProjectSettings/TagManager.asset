@@ -10,6 +10,9 @@ TagManager:
   - ShipCell5
   - PlayerCell
   - EnemyCell
+  - Mainmenu
+  - Setplaceships
+  - Gameplay
   layers:
   - Default
   - TransparentFX
@@ -17,9 +20,9 @@ TagManager:
   - 
   - Water
   - UI
-  - Ship
+  - PlayerShip
+  - EnemyShip
   - Cell
-  - 
   - 
   - 
   - 

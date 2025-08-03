@@ -1,29 +1,32 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 namespace Sonn.BattleShips
 {
     public class ShipManager : MonoBehaviour, IComponentChecking
     {
+        public static ShipManager Ins;
+
         public GameObject[] shipPrefabs;
         public Vector3 offsetPos;
         public int shipCount;
+        public bool isPlacingShip;
 
         private float m_shipDistance = 1.3f;
         private Ship m_selectedShip;
         private List<Ship> m_shipList;
         private Vector3 m_chosenPos;
-        private GridManager m_gridMng;
         private Manage m_manage;
 
         private void Awake()
         {
             m_selectedShip = null;
             m_chosenPos = Vector3.zero;
-            m_gridMng = FindObjectOfType<GridManager>();
             m_shipList = new();
             m_manage = FindObjectOfType<Manage>();
+            MakeSingleton();
         }
         private void Start()
         {
@@ -97,7 +100,20 @@ namespace Sonn.BattleShips
         {
             Ship clickedShip = hit.collider.GetComponent<Ship>();
             if (clickedShip == null || IsComponentNull())
+            {
                 return;
+            }
+
+            if (isPlacingShip)
+            {
+                Debug.Log("Hãy chờ đặt tàu xong!");
+                if (m_selectedShip != null)
+                {
+                    m_selectedShip.isSelectedShip = true;
+                    m_selectedShip.StartFlashing();
+                }
+                return;
+            }
 
             if (clickedShip.isPlacedShip)
             {
@@ -113,8 +129,11 @@ namespace Sonn.BattleShips
 
             m_selectedShip = clickedShip;
             m_selectedShip.isSelectedShip = true;
+            m_selectedShip.isPlacedShip = false;
+            m_selectedShip.isSunkShip = false;
             m_selectedShip.StartFlashing();
-            Debug.Log($"Đã chọn tàu {m_selectedShip.name}!");   
+            Debug.Log($"Đã chọn tàu {m_selectedShip.name}!");
+            isPlacingShip = true;
         }
         private void PlaceShipOnGrid(RaycastHit2D hit)
         {
@@ -141,11 +160,20 @@ namespace Sonn.BattleShips
             m_chosenPos = hit.transform.position;
             m_selectedShip.MoveShip(m_chosenPos);
 
+            if (!m_selectedShip.IsWithInGridBounds())
+            {
+                Debug.Log("Tàu đặt ngoài phạm vi lưới. Hãy đặt lại!");
+                return;
+            }
+            if (m_selectedShip.CheckForOverlappingShips())
+            {
+                return;
+            }
+
             var newCells = m_selectedShip.GetOccupiedCells();
             if (IsShipNextToAnotherShip(newCells))
             {
                 Debug.Log("Không được đặt tàu cạnh nhau!");
-                m_selectedShip.StartFlashing();
                 return;
             }
             else
@@ -159,21 +187,25 @@ namespace Sonn.BattleShips
 
                 m_selectedShip.isSelectedShip = false;
                 m_selectedShip.isSunkShip = false;
+                m_selectedShip.isPlacedShip = true;
                 m_selectedShip.StopFlashing();
 
                 Debug.Log($"Trạng thái của {m_selectedShip.name}: {(m_selectedShip.isSunkShip ? "Chìm" : "Nổi")}");
-                
-                shipCount--;
-                if (shipCount <= 0)
-                {
-                    Debug.Log("Bạn đã đặt hết tàu!");
-                    m_manage.playGameBtn.gameObject.SetActive(true);
-                }
 
+                shipCount--;
+
+            }
+
+            if (shipCount == 0)
+            {
+                Debug.Log("Bạn đã đặt hết tàu!");
+                m_manage.playGameBtn.gameObject.SetActive(true);
             }
 
             m_selectedShip = null;
             m_chosenPos = Vector3.zero;
+            isPlacingShip = false;
+
         }
         private bool IsShipNextToAnotherShip(List<Cell> occupiedCells)
         {
@@ -189,7 +221,7 @@ namespace Sonn.BattleShips
                             continue;
                         }
                         Vector2 neighborCellPos = new(cellPos.x + x, cellPos.y + y);
-                        foreach (var c in m_gridMng.CellList)
+                        foreach (var c in GridManager.Ins.CellList)
                         {
                             if (c.cellPosOnGrid == neighborCellPos 
                                 && c.hasShip)
@@ -204,7 +236,7 @@ namespace Sonn.BattleShips
         }    
         public bool IsComponentNull()
         {
-            bool check = m_gridMng == null || m_manage == null;
+            bool check = GridManager.Ins == null || m_manage == null;
             if (check)
             {
                 Debug.LogWarning("Có component bị rỗng. Hãy kiểm tra lại!");
@@ -217,6 +249,18 @@ namespace Sonn.BattleShips
             {
                 m_selectedShip.RotateShip();
             }    
-        }    
+        }
+        private void MakeSingleton()
+        {
+            if (Ins == null)
+            {
+                Ins = this;
+                DontDestroyOnLoad(this);
+            }
+            else
+            {
+                Destroy(gameObject);
+            }
+        }
     }
 }
