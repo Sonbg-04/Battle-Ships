@@ -38,7 +38,27 @@ namespace Sonn.BattleShips
             {
                 audio.PlayOneShot(audio.clip);
             }    
-        }    
-        
+        }
+        public void StopMusic(AudioSource audio)
+        {
+            if (audio)
+            {
+                audio.Stop();
+            }
+        }
+        public void PauseMusic(AudioSource audio)
+        {
+            if (audio)
+            {
+                audio.Pause();
+            }
+        }
+        public void ResumeMusic(AudioSource audio)
+        {
+            if (audio)
+            {
+                audio.UnPause();
+            }
+        }
     }
 }

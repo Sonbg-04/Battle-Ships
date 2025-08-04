@@ -20,6 +20,8 @@ namespace Sonn.BattleShips
         private Vector3 m_chosenPos;
         private Manage m_manage;
 
+        public List<Ship> ShipList { get => m_shipList; }
+
         private void Awake()
         {
             m_selectedShip = null;

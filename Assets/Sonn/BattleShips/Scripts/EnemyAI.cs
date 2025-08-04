@@ -6,9 +6,10 @@ namespace Sonn.BattleShips
 {
     public class EnemyAI : MonoBehaviour, IComponentChecking
     {
-        public GameObject enemyCellPrefab, hitPrefab, missPrefab;
+        public GameObject enemyCellPrefab;
         public GameObject[] enemyShipPrefabs;
         public Vector3 offsetPos, offsetScalePos;
+        public bool isEnemyShoot, isEnemySelectedCell;
 
         private Cell[, ] m_enemyCell;
         private List<Cell> m_enemyCellList;
