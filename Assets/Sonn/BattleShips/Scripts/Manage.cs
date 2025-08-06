@@ -8,8 +8,14 @@ namespace Sonn.BattleShips
 {
     public class Manage : MonoBehaviour, IComponentChecking
     {
-        public Button playGameBtn;
+        public static Manage Ins;
 
+        public Button playGameBtn;
+        
+        private void Awake()
+        {
+            MakeSingleton(); 
+        }
         public bool IsComponentNull()
         {
             bool check = AudioManager.Ins == null || ShipManager.Ins == null;
@@ -57,6 +63,18 @@ namespace Sonn.BattleShips
                     }    
                 }    
             }
-        }    
+        }
+        private void MakeSingleton()
+        {
+            if (Ins == null)
+            {
+                Ins = this;
+                DontDestroyOnLoad(this);
+            }
+            else
+            {
+                Destroy(gameObject);
+            }
+        }
     }
 }

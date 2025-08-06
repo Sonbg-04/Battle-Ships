@@ -1107,7 +1107,7 @@ GameObject:
   - component: {fileID: 610231051}
   m_Layer: 0
   m_Name: Player
-  m_TagString: Untagged
+  m_TagString: Gameplay
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -3140,8 +3140,10 @@ MonoBehaviour:
   hitPrefab: {fileID: 3102224982917338856, guid: 3b3ea1711b66ce648a942ce2e35b0c7a, type: 3}
   missPrefab: {fileID: 3996638242540574087, guid: 7400559dac305fd44bb988c49d58f9b7, type: 3}
   enemyCells: []
-  gameOverDialog: {fileID: 0}
-  gameWinDialog: {fileID: 0}
+  playerUI: []
+  enemyUI: []
+  gameOverDialog: {fileID: 1469457843}
+  gameWinDialog: {fileID: 1176692689}
 --- !u!1 &1210302539
 GameObject:
   m_ObjectHideFlags: 0
@@ -4648,6 +4650,24 @@ MonoBehaviour:
   offsetScalePos: {x: 0.9, y: 0.9, z: 0}
   isEnemyShoot: 0
   isEnemySelectedCell: 0
+  offsetEnemyShipPartClones:
+  - {x: 0, y: 0, z: 0}
+  - {x: 0, y: 0, z: 0}
+  - {x: 0, y: 0, z: 0}
+  - {x: 0, y: 0, z: 0}
+  - {x: 0, y: 0, z: 0}
+  - {x: 0, y: 0, z: 0}
+  - {x: 0, y: 0, z: 0}
+  - {x: 0, y: 0, z: 0}
+  - {x: 0, y: 0, z: 0}
+  - {x: 0, y: 0, z: 0}
+  - {x: 0, y: 0, z: 0}
+  - {x: 0, y: 0, z: 0}
+  - {x: 0, y: 0, z: 0}
+  - {x: 0, y: 0, z: 0}
+  - {x: 0, y: 0, z: 0}
+  - {x: 0, y: 0, z: 0}
+  - {x: 0, y: 0, z: 0}
 --- !u!4 &1856672319
 Transform:
   m_ObjectHideFlags: 0

@@ -7,6 +7,16 @@ namespace Sonn.BattleShips
 {
     public class Menu : MonoBehaviour, IComponentChecking
     {
+        public SettingsDialog settingsDialog;
+
+        private void Start()
+        {
+            if (IsComponentNull())
+            {
+                return;
+            }  
+            settingsDialog.LoadSettings();
+        }
         public bool IsComponentNull()
         {
             bool check = AudioManager.Ins == null;

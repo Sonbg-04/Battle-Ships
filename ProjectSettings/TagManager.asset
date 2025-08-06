@@ -13,6 +13,10 @@ TagManager:
   - Mainmenu
   - Setplaceships
   - Gameplay
+  - Ship_2_Parts
+  - Ship_3_Parts
+  - Ship_4_Parts
+  - Ship_5_Parts
   layers:
   - Default
   - TransparentFX

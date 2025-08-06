@@ -9,6 +9,7 @@ namespace Sonn.BattleShips
         public bool hasShip, isHit;
         public int countHit;
         public Vector2 cellPosOnGrid;
+        public Transform shipPartTransform;
 
     }
 }

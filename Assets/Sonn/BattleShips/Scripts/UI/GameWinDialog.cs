@@ -62,12 +62,14 @@ namespace Sonn.BattleShips
             Close();
             AudioManager.Ins.PlaySFX(AudioManager.Ins.buttonClickSource);
             SceneManager.LoadScene(Const.MAIN_MENU_SCENE);
+            
             GameObject[] objs = FindObjectsOfType<GameObject>();
             foreach (var obj in objs)
             {
                 if (obj != null)
                 {
-                    if (obj.CompareTag(Const.SET_PLACESHIPS_TAG))
+                    if (obj.CompareTag(Const.SET_PLACESHIPS_TAG)
+                        || obj.CompareTag(Const.MAIN_MENU_TAG))
                     {
                         Destroy(obj);
                     }

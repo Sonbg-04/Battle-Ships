@@ -73,23 +73,6 @@ namespace Sonn.BattleShips
                 transform.localScale.z
                 );
         }
-        private void OnDrawGizmos()
-        {
-            Gizmos.color = Color.red;
-
-            Vector3 sizeBox = new(
-                Mathf.Abs(maxBound.x - minBound.x),
-                Mathf.Abs(maxBound.y - minBound.y),
-                0);
-
-            Vector3 centerBox = new(
-                ((minBound.x + maxBound.x) / 2f),
-                ((minBound.y + maxBound.y) / 2f),
-                0);
-
-            Gizmos.DrawWireCube(centerBox, sizeBox);
-
-        }
         private void MakeSingleton()
         {
             if (Ins == null)

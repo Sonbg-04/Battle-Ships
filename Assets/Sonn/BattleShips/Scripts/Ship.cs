@@ -11,16 +11,15 @@ namespace Sonn.BattleShips
         public int shipSize;
         public Vector3 offsetPos;
 
-        private Manage m_manage;
         private List<Cell> m_occupiedCells;
         private int m_rotateCounter = 0;
         private Coroutine m_coroutine;
 
         private void Awake()
         {
-            m_manage = FindObjectOfType<Manage>();
             m_occupiedCells = new();
             m_coroutine = null;
+            shipSize = transform.childCount;
         }
         private void SetAlphaShip(float alpha)
         {
@@ -150,7 +149,7 @@ namespace Sonn.BattleShips
         }
         public bool IsComponentNull()
         {
-            bool check = m_manage == null || GridManager.Ins == null;
+            bool check = Manage.Ins == null || GridManager.Ins == null;
             if (check)
             {
                 Debug.LogWarning("Có component bị rỗng. Hãy kiểm tra lại!");
@@ -173,6 +172,11 @@ namespace Sonn.BattleShips
 
             m_rotateCounter++;
             isRotatedShip = m_rotateCounter % 2 != 0;
+        }
+        public bool IsVertical()
+        {
+            float rotZ = transform.eulerAngles.z;
+            return Mathf.Approximately(rotZ % 180, 90f);
         }
 
     }

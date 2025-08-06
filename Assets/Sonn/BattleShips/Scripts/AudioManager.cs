@@ -11,8 +11,6 @@ namespace Sonn.BattleShips
         public AudioSource backgroundSource, buttonClickSource,
             victorySource, defeatSource;
 
-        public SettingsDialog settingsDialog; 
-
         private void Awake()
         {
             if (Ins == null)
@@ -29,7 +27,6 @@ namespace Sonn.BattleShips
         private void Start()
         {
             backgroundSource.Play();
-            settingsDialog.LoadSettings();
         }
 
         public void PlaySFX(AudioSource audio)
@@ -48,14 +45,14 @@ namespace Sonn.BattleShips
         }
         public void PauseMusic(AudioSource audio)
         {
-            if (audio)
+            if (audio && audio.isPlaying)
             {
                 audio.Pause();
             }
         }
         public void ResumeMusic(AudioSource audio)
         {
-            if (audio)
+            if (audio && !audio.isPlaying)
             {
                 audio.UnPause();
             }

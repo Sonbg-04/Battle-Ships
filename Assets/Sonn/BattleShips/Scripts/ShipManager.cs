@@ -18,7 +18,6 @@ namespace Sonn.BattleShips
         private Ship m_selectedShip;
         private List<Ship> m_shipList;
         private Vector3 m_chosenPos;
-        private Manage m_manage;
 
         public List<Ship> ShipList { get => m_shipList; }
 
@@ -27,7 +26,6 @@ namespace Sonn.BattleShips
             m_selectedShip = null;
             m_chosenPos = Vector3.zero;
             m_shipList = new();
-            m_manage = FindObjectOfType<Manage>();
             MakeSingleton();
         }
         private void Start()
@@ -108,12 +106,8 @@ namespace Sonn.BattleShips
 
             if (isPlacingShip)
             {
-                Debug.Log("Hãy chờ đặt tàu xong!");
-                if (m_selectedShip != null)
-                {
-                    m_selectedShip.isSelectedShip = true;
-                    m_selectedShip.StartFlashing();
-                }
+                Debug.Log("Hãy chờ tàu đặt xong!");
+                m_selectedShip.StartFlashing();
                 return;
             }
 
@@ -180,15 +174,34 @@ namespace Sonn.BattleShips
             }
             else
             {
-                foreach (var newCell in newCells)
+                List<Transform> shipParts = new();
+                foreach (Transform part in m_selectedShip.transform)
                 {
-                    newCell.hasShip = true;
+                    shipParts.Add(part);
+                }    
+                bool isVertical = m_selectedShip.IsVertical();
+                if (isVertical)
+                {
+                    shipParts.Sort((a, b) => a.position.y.CompareTo(b.position.y));
+                }
+                else
+                {
+                    shipParts.Sort((a, b) => a.position.x.CompareTo(b.position.x));
+                }
+
+                for (int i = 0; i < newCells.Count; i++)
+                {
+                    var playerCell = newCells[i];
+                    var shipPart = shipParts[i];
+
+                    shipPart.position = playerCell.transform.position;
+                    playerCell.hasShip = true;
+                    playerCell.shipPartTransform = shipPart;
                 }
 
                 Debug.Log($"{m_selectedShip.name} đã đặt lên lưới!");
 
                 m_selectedShip.isSelectedShip = false;
-                m_selectedShip.isSunkShip = false;
                 m_selectedShip.isPlacedShip = true;
                 m_selectedShip.StopFlashing();
 
@@ -201,7 +214,7 @@ namespace Sonn.BattleShips
             if (shipCount == 0)
             {
                 Debug.Log("Bạn đã đặt hết tàu!");
-                m_manage.playGameBtn.gameObject.SetActive(true);
+                Manage.Ins.playGameBtn.gameObject.SetActive(true);
             }
 
             m_selectedShip = null;
@@ -238,7 +251,7 @@ namespace Sonn.BattleShips
         }    
         public bool IsComponentNull()
         {
-            bool check = GridManager.Ins == null || m_manage == null;
+            bool check = GridManager.Ins == null || Manage.Ins == null;
             if (check)
             {
                 Debug.LogWarning("Có component bị rỗng. Hãy kiểm tra lại!");

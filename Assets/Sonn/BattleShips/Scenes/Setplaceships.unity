@@ -352,7 +352,7 @@ GameObject:
   - component: {fileID: 93454554}
   m_Layer: 0
   m_Name: Manage
-  m_TagString: Untagged
+  m_TagString: Setplaceships
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1530,6 +1530,7 @@ MonoBehaviour:
   - {fileID: 5567125895427682255, guid: 0f7cf34caab10dc4081426380be8e08f, type: 3}
   offsetPos: {x: 1.7, y: 0.6, z: 0}
   shipCount: 0
+  isPlacingShip: 0
 --- !u!1 &623533312
 GameObject:
   m_ObjectHideFlags: 0

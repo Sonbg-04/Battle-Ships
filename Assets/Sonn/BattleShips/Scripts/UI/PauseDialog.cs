@@ -24,13 +24,17 @@ namespace Sonn.BattleShips
             }
             base.Show(isShow);
             AudioManager.Ins.PlaySFX(AudioManager.Ins.buttonClickSource);
-            AudioManager.Ins.StopMusic(AudioManager.Ins.backgroundSource);
+            AudioManager.Ins.PauseMusic(AudioManager.Ins.backgroundSource);
             Time.timeScale = 0;
         }
         public override void Close()
         {
-            base.Close();
+            if (IsComponentNull())
+            {
+                return;
+            }
             Time.timeScale = 1f;
+            base.Close();
             AudioManager.Ins.PlaySFX(AudioManager.Ins.buttonClickSource);
             AudioManager.Ins.ResumeMusic(AudioManager.Ins.backgroundSource);
         }
@@ -43,6 +47,7 @@ namespace Sonn.BattleShips
             Close();
             AudioManager.Ins.PlaySFX(AudioManager.Ins.buttonClickSource);
             SceneManager.LoadScene(Const.SET_PLACESHIPS_SCENE);
+            
             GameObject[] objs = FindObjectsOfType<GameObject>();
             foreach (var obj in objs)
             {
@@ -61,14 +66,17 @@ namespace Sonn.BattleShips
             {
                 return;
             }
+            Close();
             AudioManager.Ins.PlaySFX(AudioManager.Ins.buttonClickSource);
             SceneManager.LoadScene(Const.MAIN_MENU_SCENE);
+            
             GameObject[] objs = FindObjectsOfType<GameObject>();
             foreach (var obj in objs)
             {
                 if (obj != null)
                 {
-                    if (obj.CompareTag(Const.SET_PLACESHIPS_TAG))
+                    if (obj.CompareTag(Const.SET_PLACESHIPS_TAG)
+                        || obj.CompareTag(Const.MAIN_MENU_TAG))
                     {
                         Destroy(obj);
                     }

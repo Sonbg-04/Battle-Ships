@@ -10,11 +10,11 @@ namespace Sonn.BattleShips
 
         private GameManager m_gameMng;
         private bool m_enemyCellDiscovered = false;
-        private Cell m_selectEnemyCell;
+        private Cell m_selectedEnemyCell;
 
         private void Awake()
         {
-            m_selectEnemyCell = null;
+            m_selectedEnemyCell = null;
             m_gameMng = FindObjectOfType<GameManager>();
         }
         public bool IsComponentNull()
@@ -26,11 +26,8 @@ namespace Sonn.BattleShips
             }
             return check;
         }
-        private void Start()
-        {
-            Init();
-        }
-        private void Init()
+        
+        public void PlayerChooseCell()
         {
             if (IsComponentNull())
             {
@@ -47,6 +44,43 @@ namespace Sonn.BattleShips
                 }
                 Debug.Log($"Có {m_gameMng.enemyCells.Count} ô của người chơi có trong Game play!");
             }
+        }
+        public void PlayerTurning()
+        {
+            if (!isSelectedCell && Input.GetMouseButtonDown(0))
+            {
+                StartCoroutine(PlayerShootCoroutine());
+            }
+        }
+        IEnumerator PlayerShootCoroutine()
+        {
+            isSelectedCell = true;
+            bool isKeepShooting = true, hitLastShot = false;
+
+            while (isKeepShooting)
+            {
+                yield return new WaitUntil(() => Input.GetMouseButtonDown(0));
+                RaycastHit2D hit = Physics2D.Raycast(
+                    Camera.main.ScreenToWorldPoint(Input.mousePosition),
+                    Vector2.zero
+                    );
+                if (hit.collider != null && hit.collider.CompareTag(Const.ENEMY_CELL_TAG))
+                {
+                    var cell = hit.collider.GetComponent<Cell>();
+                    if (!cell.isHit)
+                    {
+                        m_selectedEnemyCell = cell;
+                        m_selectedEnemyCell.countHit++;
+                        m_gameMng.CheckCellIsHit(m_selectedEnemyCell, m_gameMng.playerUI, out bool isShootingHit);
+                        hitLastShot = isShootingHit;
+                        if (!hitLastShot)
+                        {
+                            isKeepShooting = false;
+                        }    
+                    }    
+                }    
+            }
+            m_gameMng.WaitNextTurn(2);
         }    
     }
 }
