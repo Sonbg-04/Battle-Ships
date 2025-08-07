@@ -11,23 +11,15 @@ namespace Sonn.BattleShips
         private GameManager m_gameMng;
         private bool m_enemyCellDiscovered = false;
         private Cell m_selectedEnemyCell;
+        private EnemyAI m_enemyAI;
 
         private void Awake()
         {
             m_selectedEnemyCell = null;
             m_gameMng = FindObjectOfType<GameManager>();
+            m_enemyAI = FindObjectOfType<EnemyAI>();
         }
-        public bool IsComponentNull()
-        {
-            bool check = m_gameMng == null;
-            if (check)
-            {
-                Debug.LogWarning("Có component bị rỗng. Hãy kiểm tra lại!");
-            }
-            return check;
-        }
-        
-        public void PlayerChooseCell()
+        public void PlayerFindEnemyCell()
         {
             if (IsComponentNull())
             {
@@ -36,14 +28,23 @@ namespace Sonn.BattleShips
 
             if (!m_enemyCellDiscovered)
             {
-                GameObject[] enemyCells = GameObject.FindGameObjectsWithTag(Const.ENEMY_CELL_TAG);
-                if (enemyCells.Length > 0)
+                GameObject[] obj = GameObject.FindGameObjectsWithTag(Const.ENEMY_CELL_TAG);
+                if (obj.Length > 0)
                 {
-                    m_gameMng.enemyCells.AddRange(enemyCells);
+                    m_gameMng.enemyCells.AddRange(obj);
                     m_enemyCellDiscovered = true;
+                    Debug.Log($"Có {m_gameMng.enemyCells.Count} ô kẻ thù mà người chơi tìm thấy!");
                 }
-                Debug.Log($"Có {m_gameMng.enemyCells.Count} ô của người chơi có trong Game play!");
             }
+        }
+        public bool IsComponentNull()
+        {
+            bool check = m_gameMng == null || m_enemyAI == null;
+            if (check)
+            {
+                Debug.LogWarning("Có component bị rỗng. Hãy kiểm tra lại!");
+            }
+            return check;
         }
         public void PlayerTurning()
         {
@@ -70,17 +71,20 @@ namespace Sonn.BattleShips
                     if (!cell.isHit)
                     {
                         m_selectedEnemyCell = cell;
-                        m_selectedEnemyCell.countHit++;
                         m_gameMng.CheckCellIsHit(m_selectedEnemyCell, m_gameMng.playerUI, out bool isShootingHit);
                         hitLastShot = isShootingHit;
                         if (!hitLastShot)
                         {
                             isKeepShooting = false;
-                        }    
+                        }  
                     }    
                 }    
             }
             m_gameMng.WaitNextTurn(2);
+        }    
+        public void PlayerSunkShip()
+        {
+
         }    
     }
 }

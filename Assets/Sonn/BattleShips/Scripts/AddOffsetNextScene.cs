@@ -25,12 +25,26 @@ namespace Sonn.BattleShips
                 string nameScene = scene.name;
                 if (nameScene == Const.GAME_PLAY_SCENE)
                 {
-                    transform.position = new Vector3(
-                        transform.position.x + offsetNextScenePos.x,
-                        transform.position.y + offsetNextScenePos.y,
-                        0
-                        );
                     isBattle = true;
+                    if (gameObject.layer == LayerMask.NameToLayer(Const.SHIP_PLAYER_LAYER)
+                        || gameObject.CompareTag(Const.PLAYER_CELL_TAG))
+                    {
+                        transform.position = new Vector3(
+                                  transform.position.x + offsetNextScenePos.x,
+                                  transform.position.y + offsetNextScenePos.y,
+                                  0);
+                        
+                    }
+                    else
+                    {
+                        offsetNextScenePos = Vector3.zero;
+                        transform.position = new Vector3(
+                                  transform.position.x + offsetNextScenePos.x,
+                                  transform.position.y + offsetNextScenePos.y,
+                                  0);
+                    }    
+
+                   
                 }    
             }
         }    

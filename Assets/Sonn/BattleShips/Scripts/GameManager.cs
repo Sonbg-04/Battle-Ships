@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -11,7 +10,7 @@ namespace Sonn.BattleShips
         public Image yourTurnImg, enemyturnImg;
         public int turn = 1, playerShipCount, enemyShipCount;
         public GameObject hitPrefab, missPrefab;
-        public List<GameObject> enemyCells, playerUI, enemyUI;
+        public List<GameObject> playerUI, enemyUI, enemyCells, playerCells;
         public GameOverDialog gameOverDialog;
         public GameWinDialog gameWinDialog;
 
@@ -22,11 +21,15 @@ namespace Sonn.BattleShips
         {
             m_player = FindObjectOfType<Player>();
             m_enemy = FindObjectOfType<EnemyAI>();
-        }
-        
+        }   
         private void Update()
         {
-            m_player.PlayerChooseCell();
+            if (IsComponentNull())
+            {
+                return;
+            }
+            m_player.PlayerFindEnemyCell();
+            m_enemy.EnemyFindPlayerCell();
             CheckTurn();
             CheckEndGame();
         }
@@ -39,7 +42,6 @@ namespace Sonn.BattleShips
             }
             return check;
         }
-        
         private void CheckTurn()
         {
             if (turn == 1)
@@ -52,13 +54,11 @@ namespace Sonn.BattleShips
                 EnemyTurn();
             }    
         }
-
         private void EnemyTurn()
         {
             SetUI(false);
             m_enemy.EnemyTurning();
         }
-
         private void PlayerTurn()
         {
             SetUI(true);
@@ -96,35 +96,103 @@ namespace Sonn.BattleShips
         public void CheckCellIsHit(Cell c, List<GameObject> list, out bool ShootIsHit)
         {
             ShootIsHit = false;
+
             if (c == null || c.isHit)
             {
                 return;
             }
+
+            c.isHit = true;
+            
+            if (c.hasEnemyShip || c.hasPlayerShip)
+            {
+                var newHit = Instantiate(hitPrefab, c.transform.position, Quaternion.identity);
+                
+                list.Add(newHit);
+                
+                ShootIsHit = true;
+
+                var part = c.shipPartTransform;
+                if (part != null)
+                {
+                    var ship = part.GetComponentInParent<Ship>();
+                    TryHandleShipSunk(ship);
+                }
+                
+                if (turn == 1)
+                {
+                    enemyShipCount--;
+                }
+                else if (turn == 2)
+                {
+                    playerShipCount--;
+                }
+            }
             else
             {
-                c.isHit = true;
-                if (c.hasShip)
+                var newMiss = Instantiate(missPrefab, c.transform.position, Quaternion.identity);
+                
+                list.Add(newMiss);
+            }
+        }
+        private void TryHandleShipSunk(Ship ship)
+        {
+            if (ship == null || ship.isSunkShip)
+            {
+                return;
+            }
+
+            int shipLayer = ship.gameObject.layer;
+
+            bool isEnemyShip = shipLayer == LayerMask.NameToLayer(Const.SHIP_ENEMY_LAYER);
+            bool isPlayerShip = shipLayer == LayerMask.NameToLayer(Const.SHIP_PLAYER_LAYER);
+
+            var sourceCells = isEnemyShip ? enemyCells :
+                              isPlayerShip ? playerCells : null;
+            
+            if (sourceCells == null)
+            {
+                return;
+            }
+
+            List<Cell> shipObjCell = new();
+
+            foreach (var cellObj in sourceCells)
+            {
+                if (cellObj == null)
                 {
-                    var newHit = Instantiate(hitPrefab, c.transform.position, Quaternion.identity);
-                    list.Add(newHit);
-                    ShootIsHit = true;
-                    if (turn == 1)
-                    {
-                        enemyShipCount--;
-                    }
-                    else if (turn == 2)
-                    {
-                        playerShipCount--;
-                    }
+                    continue;
                 }
-                else
+
+                var cell = cellObj.GetComponent<Cell>();
+                if (cell == null)
                 {
-                    var newMiss = Instantiate(missPrefab, c.transform.position, Quaternion.identity);
-                    list.Add(newMiss);
-                }    
-            }    
+                    continue;
+                }
 
-        }    
+                if (cell.shipPartTransform != null && cell.shipPartTransform.IsChildOf(ship.transform))
+                {
+                    shipObjCell.Add(cell);
+                }
+            }
 
+            if (shipObjCell.Count == 0)
+            {
+                return;
+            }
+
+            foreach (var c in shipObjCell)
+            {
+                if (c != null && !c.isHit)
+                {
+                    return;
+                }
+            }
+
+            ship.isSunkShip = true;
+            ship.GetComponentInChildren<SpriteRenderer>().enabled = true;
+            
+            Debug.Log($"Tàu {ship.name} của phe {(isEnemyShip ? "Enemy" : "Player")} đã bị đánh chìm!");
+        }
     }
 }

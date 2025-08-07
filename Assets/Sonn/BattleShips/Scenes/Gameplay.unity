@@ -3139,9 +3139,10 @@ MonoBehaviour:
   enemyShipCount: 17
   hitPrefab: {fileID: 3102224982917338856, guid: 3b3ea1711b66ce648a942ce2e35b0c7a, type: 3}
   missPrefab: {fileID: 3996638242540574087, guid: 7400559dac305fd44bb988c49d58f9b7, type: 3}
-  enemyCells: []
   playerUI: []
   enemyUI: []
+  enemyCells: []
+  playerCells: []
   gameOverDialog: {fileID: 1469457843}
   gameWinDialog: {fileID: 1176692689}
 --- !u!1 &1210302539
@@ -4646,28 +4647,11 @@ MonoBehaviour:
   - {fileID: 7289382694131385152, guid: 8a21d2696f4d9e048b227374cb2ed356, type: 3}
   - {fileID: 2972085623216738244, guid: e178fc12569c1f242999ff77b15486ca, type: 3}
   - {fileID: 5567125895427682255, guid: 0f7cf34caab10dc4081426380be8e08f, type: 3}
-  offsetPos: {x: 1.8, y: -3.81, z: 0}
+  offsetPos: {x: 0.87, y: -3.81, z: 0}
   offsetScalePos: {x: 0.9, y: 0.9, z: 0}
   isEnemyShoot: 0
   isEnemySelectedCell: 0
-  offsetEnemyShipPartClones:
-  - {x: 0, y: 0, z: 0}
-  - {x: 0, y: 0, z: 0}
-  - {x: 0, y: 0, z: 0}
-  - {x: 0, y: 0, z: 0}
-  - {x: 0, y: 0, z: 0}
-  - {x: 0, y: 0, z: 0}
-  - {x: 0, y: 0, z: 0}
-  - {x: 0, y: 0, z: 0}
-  - {x: 0, y: 0, z: 0}
-  - {x: 0, y: 0, z: 0}
-  - {x: 0, y: 0, z: 0}
-  - {x: 0, y: 0, z: 0}
-  - {x: 0, y: 0, z: 0}
-  - {x: 0, y: 0, z: 0}
-  - {x: 0, y: 0, z: 0}
-  - {x: 0, y: 0, z: 0}
-  - {x: 0, y: 0, z: 0}
+  isEnemyHunting: 0
 --- !u!4 &1856672319
 Transform:
   m_ObjectHideFlags: 0

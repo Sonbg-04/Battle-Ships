@@ -1,6 +1,5 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 
 namespace Sonn.BattleShips
@@ -111,7 +110,9 @@ namespace Sonn.BattleShips
                 return;
             }
 
-            if (clickedShip.isPlacedShip)
+            if (clickedShip.isPlacedShip && 
+                clickedShip.gameObject.layer == 
+                LayerMask.NameToLayer(Const.SHIP_PLAYER_LAYER))
             {
                 Debug.Log($"{clickedShip.name} đã được đặt rồi!");
                 return;
@@ -195,7 +196,7 @@ namespace Sonn.BattleShips
                     var shipPart = shipParts[i];
 
                     shipPart.position = playerCell.transform.position;
-                    playerCell.hasShip = true;
+                    playerCell.hasPlayerShip = true;
                     playerCell.shipPartTransform = shipPart;
                 }
 
@@ -221,6 +222,7 @@ namespace Sonn.BattleShips
             m_chosenPos = Vector3.zero;
             isPlacingShip = false;
 
+
         }
         private bool IsShipNextToAnotherShip(List<Cell> occupiedCells)
         {
@@ -239,7 +241,7 @@ namespace Sonn.BattleShips
                         foreach (var c in GridManager.Ins.CellList)
                         {
                             if (c.cellPosOnGrid == neighborCellPos 
-                                && c.hasShip)
+                                && c.hasPlayerShip)
                             {
                                 return true;
                             }    

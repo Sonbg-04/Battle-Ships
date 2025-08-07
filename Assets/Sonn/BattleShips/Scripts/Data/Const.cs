@@ -7,7 +7,7 @@ namespace Sonn.BattleShips
     public class Const
     {
         public const string SHIP_PLAYER_LAYER = "PlayerShip";
-        public const int SHIP_ENEMY_LAYER = 7;
+        public const string SHIP_ENEMY_LAYER = "EnemyShip";
         public const string CELL_LAYER = "Cell";
 
         public const string SHIP_CELL_2_TAG = "ShipCell2";

@@ -9,7 +9,6 @@ namespace Sonn.BattleShips
     public class Manage : MonoBehaviour, IComponentChecking
     {
         public static Manage Ins;
-
         public Button playGameBtn;
         
         private void Awake()

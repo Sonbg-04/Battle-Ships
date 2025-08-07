@@ -1,7 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using static UnityEditor.PlayerSettings;
 
 namespace Sonn.BattleShips
 {
@@ -54,7 +53,7 @@ namespace Sonn.BattleShips
                     }
 
                     m_cells[x, y] = c;
-                    m_cells[x, y].cellPosOnGrid = new Vector2(
+                    m_cells[x, y].cellPosOnGrid = new Vector2Int(
                     Mathf.RoundToInt(m_cells[x, y].transform.position.x / m_cellDistance),
                     Mathf.RoundToInt(m_cells[x, y].transform.position.y / m_cellDistance));
 

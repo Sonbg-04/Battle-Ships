@@ -8,18 +8,18 @@ namespace Sonn.BattleShips
     {
         public bool isSunkShip, isSelectedShip, 
                     isPlacedShip, isRotatedShip;
-        public int shipSize;
         public Vector3 offsetPos;
 
         private List<Cell> m_occupiedCells;
         private int m_rotateCounter = 0;
         private Coroutine m_coroutine;
 
+        public List<Cell> OccupiedCells { get => m_occupiedCells; }
+
         private void Awake()
         {
             m_occupiedCells = new();
             m_coroutine = null;
-            shipSize = transform.childCount;
         }
         private void SetAlphaShip(float alpha)
         {
