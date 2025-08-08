@@ -92,6 +92,12 @@ namespace Sonn.BattleShips
             }
             else if (hit.collider.GetComponent<Ship>() != null)
             {
+                if (hit.collider.gameObject.layer == LayerMask.NameToLayer(Const.ENEMY_SHIP_LAYER))
+                {
+                    Debug.Log($"Không thể chọn tàu địch: {hit.collider.name}");
+                    return;
+                }
+
                 SelectShip(hit);
             }
         }
@@ -112,7 +118,7 @@ namespace Sonn.BattleShips
 
             if (clickedShip.isPlacedShip && 
                 clickedShip.gameObject.layer == 
-                LayerMask.NameToLayer(Const.SHIP_PLAYER_LAYER))
+                LayerMask.NameToLayer(Const.PLAYER_SHIP_LAYER))
             {
                 Debug.Log($"{clickedShip.name} đã được đặt rồi!");
                 return;

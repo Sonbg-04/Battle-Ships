@@ -93,9 +93,11 @@ namespace Sonn.BattleShips
             yourTurnImg.gameObject.SetActive(isPlayerTurn);
             enemyturnImg.gameObject.SetActive(!isPlayerTurn);
         }    
-        public void CheckCellIsHit(Cell c, List<GameObject> list, out bool ShootIsHit)
+        public void CheckCellIsHit(Cell c, List<GameObject> list, 
+                                   out bool ShootIsHit, out bool isSunkShip)
         {
             ShootIsHit = false;
+            isSunkShip = false;
 
             if (c == null || c.isHit)
             {
@@ -116,7 +118,7 @@ namespace Sonn.BattleShips
                 if (part != null)
                 {
                     var ship = part.GetComponentInParent<Ship>();
-                    TryHandleShipSunk(ship);
+                    isSunkShip = TryHandleShipSunk(ship);
                 }
                 
                 if (turn == 1)
@@ -135,24 +137,24 @@ namespace Sonn.BattleShips
                 list.Add(newMiss);
             }
         }
-        private void TryHandleShipSunk(Ship ship)
+        private bool TryHandleShipSunk(Ship ship)
         {
             if (ship == null || ship.isSunkShip)
             {
-                return;
+                return false;
             }
 
             int shipLayer = ship.gameObject.layer;
 
-            bool isEnemyShip = shipLayer == LayerMask.NameToLayer(Const.SHIP_ENEMY_LAYER);
-            bool isPlayerShip = shipLayer == LayerMask.NameToLayer(Const.SHIP_PLAYER_LAYER);
+            bool isEnemyShip = shipLayer == LayerMask.NameToLayer(Const.ENEMY_SHIP_LAYER);
+            bool isPlayerShip = shipLayer == LayerMask.NameToLayer(Const.PLAYER_SHIP_LAYER);
 
             var sourceCells = isEnemyShip ? enemyCells :
                               isPlayerShip ? playerCells : null;
             
-            if (sourceCells == null)
+            if (sourceCells == null || sourceCells.Count <= 0)
             {
-                return;
+                return false;
             }
 
             List<Cell> shipObjCell = new();
@@ -165,34 +167,42 @@ namespace Sonn.BattleShips
                 }
 
                 var cell = cellObj.GetComponent<Cell>();
-                if (cell == null)
-                {
-                    continue;
-                }
-
-                if (cell.shipPartTransform != null && cell.shipPartTransform.IsChildOf(ship.transform))
+                if (cell != null && 
+                    cell.shipPartTransform != null && 
+                    cell.shipPartTransform.IsChildOf(ship.transform))
                 {
                     shipObjCell.Add(cell);
                 }
             }
 
-            if (shipObjCell.Count == 0)
+            if (shipObjCell.Count <= 0)
             {
-                return;
+                return false;
             }
 
             foreach (var c in shipObjCell)
             {
                 if (c != null && !c.isHit)
                 {
-                    return;
+                    return false;
                 }
             }
 
             ship.isSunkShip = true;
-            ship.GetComponentInChildren<SpriteRenderer>().enabled = true;
+
+            var shipRenderer = ship.GetComponentInChildren<SpriteRenderer>();
+            if (shipRenderer != null)
+            {
+                shipRenderer.enabled = true;
+            }
+
+            ship.GetComponent<Collider2D>().enabled = true;    
+
+            ship.gameObject.layer = LayerMask.NameToLayer(Const.DEAD_LAYER);
             
             Debug.Log($"Tàu {ship.name} của phe {(isEnemyShip ? "Enemy" : "Player")} đã bị đánh chìm!");
+            
+            return true;
         }
     }
 }

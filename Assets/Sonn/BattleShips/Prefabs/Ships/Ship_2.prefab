@@ -16,7 +16,7 @@ GameObject:
   - component: {fileID: 3074287246111005621}
   m_Layer: 6
   m_Name: Ship_2
-  m_TagString: ShipCell2
+  m_TagString: PlayerShip2
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -178,7 +178,6 @@ MonoBehaviour:
   isSelectedShip: 0
   isPlacedShip: 0
   isRotatedShip: 0
-  shipSize: 0
   offsetPos: {x: 0.4, y: 0.4, z: 0}
 --- !u!114 &3074287246111005621
 MonoBehaviour:
@@ -205,7 +204,7 @@ GameObject:
   - component: {fileID: 4665466715495263278}
   m_Layer: 6
   m_Name: Ship2Part_2
-  m_TagString: Ship_2_Parts
+  m_TagString: PlayerShipPart2_2
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -236,7 +235,7 @@ GameObject:
   - component: {fileID: 6383264219231081121}
   m_Layer: 6
   m_Name: Ship2Part_1
-  m_TagString: Ship_2_Parts
+  m_TagString: PlayerShipPart2_1
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

@@ -61,17 +61,19 @@ namespace Sonn.BattleShips
             while (isKeepShooting)
             {
                 yield return new WaitUntil(() => Input.GetMouseButtonDown(0));
+
                 RaycastHit2D hit = Physics2D.Raycast(
                     Camera.main.ScreenToWorldPoint(Input.mousePosition),
                     Vector2.zero
                     );
+
                 if (hit.collider != null && hit.collider.CompareTag(Const.ENEMY_CELL_TAG))
                 {
                     var cell = hit.collider.GetComponent<Cell>();
-                    if (!cell.isHit)
+                    if (cell != null && !cell.isHit)
                     {
                         m_selectedEnemyCell = cell;
-                        m_gameMng.CheckCellIsHit(m_selectedEnemyCell, m_gameMng.playerUI, out bool isShootingHit);
+                        m_gameMng.CheckCellIsHit(m_selectedEnemyCell, m_gameMng.playerUI, out bool isShootingHit, out bool isSunkShip);
                         hitLastShot = isShootingHit;
                         if (!hitLastShot)
                         {

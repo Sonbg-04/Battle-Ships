@@ -1,42 +1,60 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-
 namespace Sonn.BattleShips
 {
     public class Const
     {
-        public const string SHIP_PLAYER_LAYER = "PlayerShip";
-        public const string SHIP_ENEMY_LAYER = "EnemyShip";
-        public const string CELL_LAYER = "Cell";
-
-        public const string SHIP_CELL_2_TAG = "ShipCell2";
-        public const string SHIP_CELL_3_TAG = "ShipCell3";
-        public const string SHIP_CELL_4_TAG = "ShipCell4";
-        public const string SHIP_CELL_5_TAG = "ShipCell5";
-
-        public const string SHIP_PART_2_TAG = "Ship_2_Parts";
-        public const string SHIP_PART_3_TAG = "Ship_3_Parts";
-        public const string SHIP_PART_4_TAG = "Ship_4_Parts";
-        public const string SHIP_PART_5_TAG = "Ship_5_Parts";
-
-        public const string SHIP_PART_2_1_NAME = "Ship2Part_1";
-        public const string SHIP_PART_2_2_NAME = "Ship2Part_2";
+        public const string PLAYER_SHIP_LAYER = "PlayerShip";
+        public const string ENEMY_SHIP_LAYER = "EnemyShip";
         
-        public const string SHIP_PART_3_1_NAME = "Ship3Part_1";
-        public const string SHIP_PART_3_2_NAME = "Ship3Part_2";
-        public const string SHIP_PART_3_3_NAME = "Ship3Part_3";
+        public const string PLAYER_CELL_LAYER = "PlayerCell";
+        public const string ENEMY_CELL_LAYER = "EnemyCell";
 
-        public const string SHIP_PART_4_1_NAME = "Ship4Part_1";
-        public const string SHIP_PART_4_2_NAME = "Ship4Part_2";
-        public const string SHIP_PART_4_3_NAME = "Ship4Part_3";
-        public const string SHIP_PART_4_4_NAME = "Ship4Part_4";
+        public const string DEAD_LAYER = "Dead";
 
-        public const string SHIP_PART_5_1_NAME = "Ship5Part_1";
-        public const string SHIP_PART_5_2_NAME = "Ship5Part_2";
-        public const string SHIP_PART_5_3_NAME = "Ship5Part_3";
-        public const string SHIP_PART_5_4_NAME = "Ship5Part_4";
-        public const string SHIP_PART_5_5_NAME = "Ship5Part_5";
+        public const string PLAYER_SHIP_2_TAG = "PlayerShip2";
+        public const string PLAYER_SHIP_3_TAG = "PlayerShip3";
+        public const string PLAYER_SHIP_4_TAG = "PlayerShip4";
+        public const string PLAYER_SHIP_5_TAG = "PlayerShip5";
+
+        public const string PLAYER_SHIP_PART_2_1_TAG = "PlayerShipPart2_1";
+        public const string PLAYER_SHIP_PART_2_2_TAG = "PlayerShipPart2_2";
+
+        public const string PLAYER_SHIP_PART_3_1_TAG = "PlayerShipPart3_1";
+        public const string PLAYER_SHIP_PART_3_2_TAG = "PlayerShipPart3_2";
+        public const string PLAYER_SHIP_PART_3_3_TAG = "PlayerShipPart3_3";
+
+        public const string PLAYER_SHIP_PART_4_1_TAG = "PlayerShipPart4_1";
+        public const string PLAYER_SHIP_PART_4_2_TAG = "PlayerShipPart4_2";
+        public const string PLAYER_SHIP_PART_4_3_TAG = "PlayerShipPart4_3";
+        public const string PLAYER_SHIP_PART_4_4_TAG = "PlayerShipPart4_4";
+
+        public const string PLAYER_SHIP_PART_5_1_TAG = "PlayerShipPart5_1";
+        public const string PLAYER_SHIP_PART_5_2_TAG = "PlayerShipPart5_2";
+        public const string PLAYER_SHIP_PART_5_3_TAG = "PlayerShipPart5_3";
+        public const string PLAYER_SHIP_PART_5_4_TAG = "PlayerShipPart5_4";
+        public const string PLAYER_SHIP_PART_5_5_TAG = "PlayerShipPart5_5";
+
+        public const string ENEMY_SHIP_2_TAG = "EnemyShip2";
+        public const string ENEMY_SHIP_3_TAG = "EnemyShip3";
+        public const string ENEMY_SHIP_4_TAG = "EnemyShip4";
+        public const string ENEMY_SHIP_5_TAG = "EnemyShip5";
+
+        public const string ENEMY_SHIP_PART_2_1_TAG = "EnemyShipPart2_1";
+        public const string ENEMY_SHIP_PART_2_2_TAG = "EnemyShipPart2_2";
+
+        public const string ENEMY_SHIP_PART_3_1_TAG = "EnemyShipPart3_1";
+        public const string ENEMY_SHIP_PART_3_2_TAG = "EnemyShipPart3_2";
+        public const string ENEMY_SHIP_PART_3_3_TAG = "EnemyShipPart3_3";
+
+        public const string ENEMY_SHIP_PART_4_1_TAG = "EnemyShipPart4_1";
+        public const string ENEMY_SHIP_PART_4_2_TAG = "EnemyShipPart4_2";
+        public const string ENEMY_SHIP_PART_4_3_TAG = "EnemyShipPart4_3";
+        public const string ENEMY_SHIP_PART_4_4_TAG = "EnemyShipPart4_4";
+
+        public const string ENEMY_SHIP_PART_5_1_TAG = "EnemyShipPart5_1";
+        public const string ENEMY_SHIP_PART_5_2_TAG = "EnemyShipPart5_2";
+        public const string ENEMY_SHIP_PART_5_3_TAG = "EnemyShipPart5_3";
+        public const string ENEMY_SHIP_PART_5_4_TAG = "EnemyShipPart5_4";
+        public const string ENEMY_SHIP_PART_5_5_TAG = "EnemyShipPart5_5";
 
         public const string PLAYER_CELL_TAG = "PlayerCell";
         public const string ENEMY_CELL_TAG = "EnemyCell";

@@ -26,8 +26,8 @@ namespace Sonn.BattleShips
                 if (nameScene == Const.GAME_PLAY_SCENE)
                 {
                     isBattle = true;
-                    if (gameObject.layer == LayerMask.NameToLayer(Const.SHIP_PLAYER_LAYER)
-                        || gameObject.CompareTag(Const.PLAYER_CELL_TAG))
+                    if (gameObject.layer == LayerMask.NameToLayer(Const.PLAYER_SHIP_LAYER)
+                        || gameObject.layer == LayerMask.NameToLayer(Const.PLAYER_CELL_LAYER))
                     {
                         transform.position = new Vector3(
                                   transform.position.x + offsetNextScenePos.x,

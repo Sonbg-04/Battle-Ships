@@ -4,15 +4,47 @@
 TagManager:
   serializedVersion: 2
   tags:
-  - ShipCell2
-  - ShipCell3
-  - ShipCell4
-  - ShipCell5
   - PlayerCell
   - EnemyCell
   - Mainmenu
   - Setplaceships
   - Gameplay
+  - PlayerShip2
+  - PlayerShip3
+  - PlayerShip4
+  - PlayerShip5
+  - PlayerShipPart2_1
+  - PlayerShipPart2_2
+  - PlayerShipPart3_1
+  - PlayerShipPart3_2
+  - PlayerShipPart3_3
+  - PlayerShipPart4_1
+  - PlayerShipPart4_2
+  - PlayerShipPart4_3
+  - PlayerShipPart4_4
+  - PlayerShipPart5_1
+  - PlayerShipPart5_2
+  - PlayerShipPart5_3
+  - PlayerShipPart5_4
+  - PlayerShipPart5_5
+  - EnemyShip2
+  - EnemyShip3
+  - EnemyShip4
+  - EnemyShip5
+  - EnemyShipPart2_1
+  - EnemyShipPart2_2
+  - EnemyShipPart3_1
+  - EnemyShipPart3_2
+  - EnemyShipPart3_3
+  - EnemyShipPart4_1
+  - EnemyShipPart4_2
+  - EnemyShipPart4_3
+  - EnemyShipPart4_4
+  - EnemyShipPart5_1
+  - EnemyShipPart5_2
+  - EnemyShipPart5_3
+  - EnemyShipPart5_4
+  - EnemyShipPart5_5
   - Ship_2_Parts
   - Ship_3_Parts
   - Ship_4_Parts
@@ -26,9 +58,9 @@ TagManager:
   - UI
   - PlayerShip
   - EnemyShip
-  - Cell
-  - 
-  - 
+  - PlayerCell
+  - EnemyCell
+  - Dead
   - 
   - 
   - 

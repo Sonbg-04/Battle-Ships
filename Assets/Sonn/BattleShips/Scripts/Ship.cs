@@ -70,7 +70,7 @@ namespace Sonn.BattleShips
                 Vector2 sizePos = part.bounds.size;
 
                 Collider2D[] results = Physics2D.OverlapBoxAll(
-                    centerPos, sizePos, 0, LayerMask.GetMask(Const.CELL_LAYER)
+                    centerPos, sizePos, 0, LayerMask.GetMask(Const.PLAYER_CELL_LAYER)
                     );
 
                 foreach (var cell in results)
@@ -134,7 +134,7 @@ namespace Sonn.BattleShips
                 Vector2 sizePos = part.bounds.size;
                 Collider2D[] hits = Physics2D.OverlapBoxAll(
                     centerPos, sizePos, 
-                    0, LayerMask.GetMask(Const.SHIP_PLAYER_LAYER));
+                    0, LayerMask.GetMask(Const.PLAYER_SHIP_LAYER));
 
                 foreach (var hit in hits)
                 {

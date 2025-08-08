@@ -74,6 +74,7 @@ namespace Sonn.BattleShips
                     enemyCell.transform.position = pos;
                     enemyCell.transform.SetParent(transform);
                     enemyCell.tag = Const.ENEMY_CELL_TAG;
+                    enemyCell.layer = LayerMask.NameToLayer(Const.ENEMY_CELL_LAYER);
                     enemyCell.name = $"EnemyCell[{x}][{y}]";
 
                     var c = enemyCell.GetComponent<Cell>();
@@ -230,7 +231,9 @@ namespace Sonn.BattleShips
 
                 var newEnemyShip = Instantiate(ship, Vector3.zero, Quaternion.identity);
                 newEnemyShip.name = $"EnemyShip_{shipSize}";
-                SetLayerEnemy(newEnemyShip, LayerMask.NameToLayer(Const.SHIP_ENEMY_LAYER));
+                newEnemyShip.layer = LayerMask.NameToLayer(Const.ENEMY_SHIP_LAYER);
+                SetTagEnemy(newEnemyShip);
+                newEnemyShip.GetComponent<Collider2D>().enabled = false;
 
                 Vector3 centerPos = Vector3.zero;
                 foreach (var item in m_occupiedEnemyCells)
@@ -256,96 +259,112 @@ namespace Sonn.BattleShips
                 if (shipRenderer != null)
                 {
                     shipRenderer.enabled = false;
-                }    
+                }
 
                 for (int i = 0; i < shipSize; i++)
                 {
                     var part = newEnemyShip.transform.GetChild(i);
+                    part.gameObject.layer = LayerMask.NameToLayer(Const.ENEMY_SHIP_LAYER);
                     var cell = m_occupiedEnemyCells[i];
                     
                     cell.hasEnemyShip = true;
                     cell.shipPartTransform = part;
-                    cell.GetComponentInChildren<SpriteRenderer>().color = Color.blue;
 
-                    if (part.CompareTag(Const.SHIP_PART_2_TAG))
+                    if (part.CompareTag(Const.ENEMY_SHIP_PART_2_1_TAG))
                     {
-                        if (part.name == Const.SHIP_PART_2_1_NAME)
-                        {
-                            part.localPosition += new Vector3(0, -0.17f, 0);
-                        }
-                        else if (part.name == Const.SHIP_PART_2_2_NAME)
-                        {
-                            part.localPosition += new Vector3(0, -0.02f, 0);
-                        }
+                        part.localPosition += new Vector3(0, -0.17f, 0);
                     }
-                    else if (part.CompareTag(Const.SHIP_PART_3_TAG))
+                    else if (part.CompareTag(Const.ENEMY_SHIP_PART_2_2_TAG))
                     {
-                        if (part.name == Const.SHIP_PART_3_1_NAME)
-                        {
-                            part.localPosition += new Vector3(0, -0.24f, 0);
-                        }
-                        else if (part.name == Const.SHIP_PART_3_2_NAME)
-                        {
-                            part.localPosition += new Vector3(0, -0.1f, 0);
-                        }
-                        else
-                        {
-                            part.localPosition += new Vector3(0, -0.02f, 0);
-                        }    
+                        part.localPosition += new Vector3(0, -0.02f, 0);
                     }
-                    else if (part.CompareTag(Const.SHIP_PART_4_TAG))
+                    else if (part.CompareTag(Const.ENEMY_SHIP_PART_3_1_TAG))
                     {
-                        if (part.name == Const.SHIP_PART_4_1_NAME)
-                        {
-                            part.localPosition += new Vector3(0, -0.39f, 0);
-                        }
-                        else if (part.name == Const.SHIP_PART_4_2_NAME)
-                        {
-                            part.localPosition += new Vector3(0, -0.25f, 0);
-                        }
-                        else if (part.name == Const.SHIP_PART_4_3_NAME)
-                        {
-                            part.localPosition += new Vector3(0, -0.13f, 0);
-                        }
-                        else
-                        {
-                            part.localPosition += Vector3.zero;
-                        }    
+                        part.localPosition += new Vector3(0, -0.24f, 0);
                     }
-                    else if (part.CompareTag(Const.SHIP_PART_5_TAG))
+                    else if (part.CompareTag(Const.ENEMY_SHIP_PART_3_2_TAG))
                     {
-                        if (part.name == Const.SHIP_PART_5_1_NAME)
-                        {
-                            part.localPosition += new Vector3(0, -0.48f, 0);
-                        }
-                        else if (part.name == Const.SHIP_PART_5_2_NAME)
-                        {
-                            part.localPosition += new Vector3(0, -0.39f, 0);
-                        }
-                        else if (part.name == Const.SHIP_PART_5_3_NAME)
-                        {
-                            part.localPosition += new Vector3(0, -0.25f, 0);
-                        }
-                        else if (part.name == Const.SHIP_PART_5_4_NAME)
-                        {
-                            part.localPosition += new Vector3(0, -0.11f, 0);
-                        }
-                        else
-                        {
-                            part.localPosition += new Vector3(0, -0.02f, 0);
-                        }    
-
+                        part.localPosition += new Vector3(0, -0.1f, 0);
+                    }
+                    else if (part.CompareTag(Const.ENEMY_SHIP_PART_3_3_TAG))
+                    {
+                        part.localPosition += new Vector3(0, -0.02f, 0);
+                    }
+                    else if (part.CompareTag(Const.ENEMY_SHIP_PART_4_1_TAG))
+                    {
+                        part.localPosition += new Vector3(0, -0.39f, 0);
+                    }
+                    else if (part.CompareTag(Const.ENEMY_SHIP_PART_4_2_TAG))
+                    {
+                        part.localPosition += new Vector3(0, -0.25f, 0);
+                    }
+                    else if (part.CompareTag(Const.ENEMY_SHIP_PART_4_3_TAG))
+                    {
+                        part.localPosition += new Vector3(0, -0.13f, 0);
+                    }
+                    else if (part.CompareTag(Const.ENEMY_SHIP_PART_4_4_TAG))
+                    {
+                        part.localPosition += Vector3.zero;
+                    }
+                    else if (part.CompareTag(Const.ENEMY_SHIP_PART_5_1_TAG))
+                    {
+                        part.localPosition += new Vector3(0, -0.48f, 0);
+                    }
+                    else if (part.CompareTag(Const.ENEMY_SHIP_PART_5_2_TAG))
+                    {
+                        part.localPosition += new Vector3(0, -0.39f, 0);
+                    }
+                    else if (part.CompareTag(Const.ENEMY_SHIP_PART_5_3_TAG))
+                    {
+                        part.localPosition += new Vector3(0, -0.25f, 0);
+                    }
+                    else if (part.CompareTag(Const.ENEMY_SHIP_PART_5_4_TAG))
+                    {
+                        part.localPosition += new Vector3(0, -0.11f, 0);
+                    }
+                    else if (part.CompareTag(Const.ENEMY_SHIP_PART_5_5_TAG))
+                    {
+                        part.localPosition += new Vector3(0, -0.02f, 0);
                     }
                 }
+
                 isShipEnemyPlaced = true;
             }
         }
-        private void SetLayerEnemy(GameObject go, int layer)
+        private void SetTagEnemy(GameObject go)
         {
-            go.layer = layer;
-            foreach (Transform t in go.transform)
+            if (go != null)
             {
-                SetLayerEnemy(t.gameObject, layer);
+                if (go.transform.childCount == 2)
+                {
+                    go.tag = Const.ENEMY_SHIP_2_TAG;
+                    go.transform.GetChild(0).tag = Const.ENEMY_SHIP_PART_2_1_TAG;
+                    go.transform.GetChild(1).tag = Const.ENEMY_SHIP_PART_2_2_TAG;
+                }
+                else if (go.transform.childCount == 3)
+                {
+                    go.tag = Const.ENEMY_SHIP_3_TAG;
+                    go.transform.GetChild(0).tag = Const.ENEMY_SHIP_PART_3_1_TAG;
+                    go.transform.GetChild(1).tag = Const.ENEMY_SHIP_PART_3_2_TAG;
+                    go.transform.GetChild(2).tag = Const.ENEMY_SHIP_PART_3_3_TAG;
+                }
+                else if (go.transform.childCount == 4)
+                {
+                    go.tag = Const.ENEMY_SHIP_4_TAG;
+                    go.transform.GetChild(0).tag = Const.ENEMY_SHIP_PART_4_1_TAG;
+                    go.transform.GetChild(1).tag = Const.ENEMY_SHIP_PART_4_2_TAG;
+                    go.transform.GetChild(2).tag = Const.ENEMY_SHIP_PART_4_3_TAG;
+                    go.transform.GetChild(3).tag = Const.ENEMY_SHIP_PART_4_4_TAG;
+                }
+                else if (go.transform.childCount == 5)
+                {
+                    go.tag = Const.ENEMY_SHIP_5_TAG;
+                    go.transform.GetChild(0).tag = Const.ENEMY_SHIP_PART_5_1_TAG;
+                    go.transform.GetChild(1).tag = Const.ENEMY_SHIP_PART_5_2_TAG;
+                    go.transform.GetChild(2).tag = Const.ENEMY_SHIP_PART_5_3_TAG;
+                    go.transform.GetChild(3).tag = Const.ENEMY_SHIP_PART_5_4_TAG;
+                    go.transform.GetChild(4).tag = Const.ENEMY_SHIP_PART_5_5_TAG;
+                }
             }
         }
         public void EnemyTurning()
@@ -543,12 +562,17 @@ namespace Sonn.BattleShips
                     m_potentialTargetCells.RemoveAt(0);
                     if (target != null && !target.isHit)
                     {
-                        m_gameMng.CheckCellIsHit(target, m_gameMng.enemyUI, out bool isHit);
-                        target.isHit = true;
+                        m_gameMng.CheckCellIsHit(target, m_gameMng.enemyUI, out bool isHit, out bool isSunk);
 
                         if (isHit)
                         {
                             EnemyRigisterHit(target);
+
+                            if (isSunk)
+                            {
+                                StopEnemyHunting();
+                                break;
+                            }    
 
                             if (m_enemyDirConfirmed && m_enemyLastHit.HasValue)
                             {
@@ -649,12 +673,16 @@ namespace Sonn.BattleShips
                 );
                 int take = Mathf.Min(shipLen, candidates.Count);
                 Cell chosen = candidates[Random.Range(0, take)];
-                m_gameMng.CheckCellIsHit(chosen, m_gameMng.enemyUI, out bool isEnemyHit);
-                chosen.isHit = true;
+
+                m_gameMng.CheckCellIsHit(chosen, m_gameMng.enemyUI, out bool isEnemyHit, out bool isSunkShip);
                 
                 if (isEnemyHit)
                 {
                     EnemyRigisterHit(chosen);
+                    if (isSunkShip)
+                    {
+                        StopEnemyHunting();
+                    }    
                 }
                 return;
             }
@@ -663,11 +691,15 @@ namespace Sonn.BattleShips
             {
                 if (c != null && !c.isHit)
                 {
-                    m_gameMng.CheckCellIsHit(c, m_gameMng.enemyUI, out bool isEnemyHit);
-                    c.isHit = true;
+                    m_gameMng.CheckCellIsHit(c, m_gameMng.enemyUI, out bool isEnemyHit, out bool isSunkShip);
+                    
                     if (isEnemyHit)
                     {
                         EnemyRigisterHit(c);
+                        if (isSunkShip)
+                        {
+                            StopEnemyHunting();
+                        }
                     }
                     return;
                 }    
