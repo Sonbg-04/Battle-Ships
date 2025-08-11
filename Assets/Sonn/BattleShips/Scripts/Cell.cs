@@ -6,7 +6,7 @@ namespace Sonn.BattleShips
 {
     public class Cell : MonoBehaviour
     {
-        public bool hasPlayerShip, hasEnemyShip, isHit;
+        public bool hasPlayerOneShip, hasPlayerTwoShip, hasEnemyShip, isHit;
         public Vector2Int cellPosOnGrid;
         public Transform shipPartTransform;
 

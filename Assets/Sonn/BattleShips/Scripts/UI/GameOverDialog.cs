@@ -16,7 +16,6 @@ namespace Sonn.BattleShips
             }
             return check;
         }
-
         public override void Show(bool isShow)
         {
             if (IsComponentNull())
@@ -36,17 +35,35 @@ namespace Sonn.BattleShips
             if (IsComponentNull())
             {
                 return;
-            } 
+            }
             Close();
             AudioManager.Ins.PlaySFX(AudioManager.Ins.buttonClickSource);
-            SceneManager.LoadScene(Const.SET_PLACESHIPS_SCENE);
-            
-            GameObject[] objs = FindObjectsOfType<GameObject>();
-            foreach (var obj in objs)
+
+            Scene sc = SceneManager.GetActiveScene();
+            if (sc.name == Const.GAME_PLAY_1_VS_1_SCENE)
             {
-                if (obj != null)
+                SceneManager.LoadScene(Const.SET_PLACESHIP_PLAYER_1_SCENE);
+                GameObject[] objs_1 = GameObject.FindGameObjectsWithTag(Const.SET_PLACESHIP_PLAYER_1_TAG);
+                GameObject[] objs_2 = GameObject.FindGameObjectsWithTag(Const.SET_PLACESHIP_PLAYER_2_TAG);
+                if (objs_1.Length > 0 || objs_2.Length > 0)
                 {
-                    if (obj.CompareTag(Const.SET_PLACESHIPS_TAG))
+                    foreach (var obj in objs_1)
+                    {
+                        Destroy(obj);
+                    }
+                    foreach (var obj in objs_2)
+                    {
+                        Destroy(obj);
+                    }
+                }
+            }
+            else if (sc.name == Const.GAME_PLAY_1_VS_AI_SCENE)
+            {
+                SceneManager.LoadScene(Const.SET_PLACESHIP_1_VS_AI_SCENE);
+                GameObject[] objs = GameObject.FindGameObjectsWithTag(Const.SET_PLACESHIP_1_VS_AI_TAG);
+                if (objs.Length > 0)
+                {
+                    foreach (var obj in objs)
                     {
                         Destroy(obj);
                     }
@@ -62,14 +79,39 @@ namespace Sonn.BattleShips
             Close();
             AudioManager.Ins.PlaySFX(AudioManager.Ins.buttonClickSource);
             SceneManager.LoadScene(Const.MAIN_MENU_SCENE);
-           
-            GameObject[] objs = FindObjectsOfType<GameObject>();
-            foreach (var obj in objs)
+
+            GameObject[] objs_3 = GameObject.FindGameObjectsWithTag(Const.MAIN_MENU_TAG);
+            Scene sc = SceneManager.GetActiveScene();
+            if (sc.name == Const.GAME_PLAY_1_VS_1_SCENE)
             {
-                if (obj != null)
+                GameObject[] objs_1 = GameObject.FindGameObjectsWithTag(Const.SET_PLACESHIP_PLAYER_1_TAG);
+                GameObject[] objs_2 = GameObject.FindGameObjectsWithTag(Const.SET_PLACESHIP_PLAYER_2_TAG);
+                if (objs_1.Length > 0 || objs_2.Length > 0 || objs_3.Length > 0)
                 {
-                    if (obj.CompareTag(Const.SET_PLACESHIPS_TAG)
-                        || obj.CompareTag(Const.MAIN_MENU_TAG))
+                    foreach (var obj in objs_1)
+                    {
+                        Destroy(obj);
+                    }
+                    foreach (var obj in objs_2)
+                    {
+                        Destroy(obj);
+                    }
+                    foreach (var obj in objs_3)
+                    {
+                        Destroy(obj);
+                    }
+                }
+            }
+            else if (sc.name == Const.GAME_PLAY_1_VS_AI_SCENE)
+            {
+                GameObject[] objs = GameObject.FindGameObjectsWithTag(Const.SET_PLACESHIP_1_VS_AI_TAG);
+                if (objs.Length > 0 || objs_3.Length > 0)
+                {
+                    foreach (var obj in objs)
+                    {
+                        Destroy(obj);
+                    }
+                    foreach (var obj in objs_3)
                     {
                         Destroy(obj);
                     }

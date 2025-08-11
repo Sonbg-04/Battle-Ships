@@ -10,18 +10,20 @@ namespace Sonn.BattleShips
     {
         public Slider musicSlider, sfxSlider;
         public AudioMixer audioMixer;
+        public Button settingBtn;
 
         public override void Show(bool isShow)
         {
             AudioManager.Ins.PlaySFX(AudioManager.Ins.buttonClickSource);
             base.Show(isShow);
             LoadSettings();
-            
+            settingBtn.gameObject.SetActive(false);
         }
 
         public override void Close()
         {
             base.Close();
+            settingBtn.gameObject.SetActive(true);
         }
 
         public void SetMusicVolume()

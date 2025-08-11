@@ -26,14 +26,6 @@ namespace Sonn.BattleShips
             }    
             return check;
         }
-        public void OnPlay()
-        {
-            if (IsComponentNull())
-            {
-                return;
-            }
-            AudioManager.Ins.PlaySFX(AudioManager.Ins.buttonClickSource);
-            SceneManager.LoadScene(Const.SET_PLACESHIPS_SCENE);
-        }
+        
     }
 }

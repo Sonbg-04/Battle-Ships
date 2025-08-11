@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 7911108396919059402}
   m_Layer: 8
   m_Name: Cell
-  m_TagString: PlayerCell
+  m_TagString: Player_1_Cell
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -144,7 +144,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e59a346e34b13824aa28f236401f9b5f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hasPlayerShip: 0
+  hasPlayerOneShip: 0
+  hasPlayerTwoShip: 0
   hasEnemyShip: 0
   isHit: 0
   cellPosOnGrid: {x: 0, y: 0}

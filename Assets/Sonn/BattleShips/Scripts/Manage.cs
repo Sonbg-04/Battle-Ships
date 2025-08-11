@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -6,74 +7,158 @@ using UnityEngine.UI;
 
 namespace Sonn.BattleShips
 {
-    public class Manage : MonoBehaviour, IComponentChecking
+    public class Manage : MonoBehaviour
     {
-        public static Manage Ins;
-        public Button playGameBtn;
+        public Button btnNext, btnPlay;
+
+        private static Dictionary<Type, MonoBehaviour> m_ins;
         
+        public static T GetIns<T>() where T : MonoBehaviour
+        {
+            if (m_ins.TryGetValue(typeof(T), out var ins))
+            {
+                return ins as T;
+            }    
+            return null;
+        }    
+
         private void Awake()
         {
-            MakeSingleton(); 
+            m_ins = new();
+            MakeSingleton();
         }
-        public bool IsComponentNull()
+        public void ShowBtnNextOrPlay(string nameScene)
         {
-            bool check = AudioManager.Ins == null || ShipManager.Ins == null;
-            if (check)
+            if (Pref.currentMode == GameMode.Player_AI)
             {
-                Debug.LogWarning("Có component bị rỗng. Hãy kiểm tra lại!");
+                btnPlay.gameObject.SetActive(true);
             }
-            return check;
-        }
+            else if (Pref.currentMode == GameMode.Player_Player)
+            {
+                if (nameScene == Const.SET_PLACESHIP_PLAYER_1_SCENE)
+                {
+                    btnNext.gameObject.SetActive(true);
+                }
+                else if (nameScene == Const.SET_PLACESHIP_PLAYER_2_SCENE)
+                {
+                    btnPlay.gameObject.SetActive(true);
+                }
+            }
+        }    
+        public void NextScene()
+        {
+            AudioManager.Ins.PlaySFX(AudioManager.Ins.buttonClickSource);
+            if (Pref.currentMode == GameMode.Player_Player)
+            {
+                SceneManager.LoadScene(Const.SET_PLACESHIP_PLAYER_2_SCENE);
+            }    
+        }    
         public void PlayGame()
         {
-            if (IsComponentNull())
-            {
-                return;
-            }
             AudioManager.Ins.PlaySFX(AudioManager.Ins.buttonClickSource);
-            SceneManager.LoadScene(Const.GAME_PLAY_SCENE);
+            
+            if (Pref.currentMode == GameMode.Player_AI)
+            {
+                SceneManager.LoadScene(Const.GAME_PLAY_1_VS_AI_SCENE);
+            }
+            else if (Pref.currentMode == GameMode.Player_Player)
+            {
+                SceneManager.LoadScene(Const.GAME_PLAY_1_VS_1_SCENE);
+            }
         }
         public void Rotate()
         {
-            if (IsComponentNull())
-            {
-                return;
-            }
             AudioManager.Ins.PlaySFX(AudioManager.Ins.buttonClickSource);
-            ShipManager.Ins.RotateShip();
+            ShipManager.GetInstance<ShipManager>().RotateShip();
         }
         public void Back()
         {
-            if (IsComponentNull())
-            {
-                return;
-            }
             AudioManager.Ins.PlaySFX(AudioManager.Ins.buttonClickSource);
             SceneManager.LoadScene(Const.MAIN_MENU_SCENE);
 
-            GameObject[] objs = FindObjectsOfType<GameObject>();
-            foreach (var obj in objs)
+            Scene sc = SceneManager.GetActiveScene();
+            if (sc.name == Const.SET_PLACESHIP_PLAYER_1_SCENE)
             {
-                if (obj != null)
+                GameObject[] obj_1 = GameObject.FindGameObjectsWithTag(Const.SET_PLACESHIP_PLAYER_1_TAG);
+                if (obj_1.Length > 0)
                 {
-                    if (obj.CompareTag(Const.SET_PLACESHIPS_TAG))
+                    foreach (var obj in obj_1)
                     {
                         Destroy(obj);
-                    }    
-                }    
+                    }
+                }
             }
+            else if (sc.name == Const.SET_PLACESHIP_PLAYER_2_SCENE)
+            {
+                GameObject[] obj_1 = GameObject.FindGameObjectsWithTag(Const.SET_PLACESHIP_PLAYER_1_TAG);
+                GameObject[] obj_2 = GameObject.FindGameObjectsWithTag(Const.SET_PLACESHIP_PLAYER_2_TAG);
+                if (obj_1.Length > 0 && obj_2.Length > 0)
+                {
+                    foreach (var obj in obj_1)
+                    {
+                        Destroy(obj);
+                    }
+
+                    foreach (var obj in obj_2)
+                    {
+                        Destroy(obj);
+                    }
+                }
+            }
+
         }
         private void MakeSingleton()
         {
-            if (Ins == null)
+            var key = GetType();
+            if (!m_ins.ContainsKey(key) || m_ins[key] == null)
             {
-                Ins = this;
+                m_ins[key] = this;
                 DontDestroyOnLoad(this);
+                SceneManager.sceneLoaded += OnSceneLoaded;
             }
             else
             {
                 Destroy(gameObject);
+            }    
+        }
+
+        private void OnDestroy()
+        {
+            SceneManager.sceneLoaded -= OnSceneLoaded;
+            
+            var key = GetType();
+            if (m_ins.ContainsKey(key) && m_ins[key] != null)
+            {
+                m_ins.Remove(key);
+            }    
+        }
+
+        private void OnSceneLoaded(Scene sc, LoadSceneMode mode)
+        {
+            string sceneName = sc.name;
+
+            if (sceneName == Const.SET_PLACESHIP_PLAYER_2_SCENE)
+            {
+                if (IsSceneSetPlaceShipPlayer_1_Object())
+                {
+                    gameObject.SetActive(false);
+                }
             }
+            else if (sceneName == Const.GAME_PLAY_1_VS_1_SCENE)
+            {
+                if (IsSceneSetPlaceShipPlayer_1_Object())
+                {
+                    gameObject.SetActive(true);
+                }
+            }
+            else if (sceneName == Const.MAIN_MENU_SCENE)
+            {
+                Destroy(gameObject);
+            }
+        }
+        private bool IsSceneSetPlaceShipPlayer_1_Object()
+        {
+            return gameObject.CompareTag(Const.SET_PLACESHIP_PLAYER_1_TAG);
         }
     }
 }

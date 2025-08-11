@@ -24,7 +24,7 @@ namespace Sonn.BattleShips
 
         private void Awake()
         {
-            m_enemyCell = new Cell[GridManager.Ins.Row, GridManager.Ins.Col];
+            m_enemyCell = new Cell[10, 10];
             m_enemyCellList = new();    
             m_gameMng = FindObjectOfType<GameManager>();
             m_occupiedEnemyCells = new();
@@ -47,7 +47,7 @@ namespace Sonn.BattleShips
         }
         public bool IsComponentNull()
         {
-            bool check = GridManager.Ins == null || m_gameMng == null;
+            bool check = GridManager.GetInstance<GridManager>() == null || m_gameMng == null;
             if (check)
             {
                 Debug.LogWarning("Có component bị rỗng. Hãy kiểm tra lại!");
@@ -61,14 +61,14 @@ namespace Sonn.BattleShips
                 return;
             }
 
-            for (int x = 0; x < GridManager.Ins.Row; x++)
+            for (int x = 0; x < 10; x++)
             {
-                for (int y = 0; y < GridManager.Ins.Col; y++)
+                for (int y = 0; y < 10; y++)
                 {
                     var enemyCell = Instantiate(enemyCellPrefab, Vector3.zero, Quaternion.identity);
                     Vector3 pos = new(
-                        x * -GridManager.Ins.CellDistance,
-                        y * -GridManager.Ins.CellDistance,
+                        x * -GridManager.GetInstance<GridManager>().CellDistance,
+                        y * -GridManager.GetInstance<GridManager>().CellDistance,
                         0
                         );
                     enemyCell.transform.position = pos;
@@ -78,14 +78,10 @@ namespace Sonn.BattleShips
                     enemyCell.name = $"EnemyCell[{x}][{y}]";
 
                     var c = enemyCell.GetComponent<Cell>();
-                    if (c == null)
-                    {
-                        return;
-                    }
                     m_enemyCell[x, y] = c;
                     m_enemyCell[x, y].cellPosOnGrid = new Vector2Int(
-                        Mathf.RoundToInt(m_enemyCell[x, y].transform.position.x / -GridManager.Ins.CellDistance),
-                        Mathf.RoundToInt(m_enemyCell[x, y].transform.position.y / -GridManager.Ins.CellDistance)
+                        Mathf.RoundToInt(m_enemyCell[x, y].transform.position.x / -GridManager.GetInstance<GridManager>().CellDistance),
+                        Mathf.RoundToInt(m_enemyCell[x, y].transform.position.y / -GridManager.GetInstance<GridManager>().CellDistance)
                         );
 
                     m_enemyCellList.Add(m_enemyCell[x, y]);
@@ -101,10 +97,16 @@ namespace Sonn.BattleShips
 
             if (!m_playerCellDiscovered)
             {
-                GameObject[] objs = GameObject.FindGameObjectsWithTag(Const.PLAYER_CELL_TAG);
+                GameObject[] objs = GameObject.FindGameObjectsWithTag(Const.PLAYER_1_CELL_TAG);
                 if (objs.Length > 0)
                 {
-                    m_gameMng.playerCells.AddRange(objs);
+                    foreach (var obj in objs)
+                    {
+                        if (!m_gameMng.playerCells.Contains(obj))
+                        {
+                            m_gameMng.playerCells.Add(obj);
+                        }
+                    }
                     m_playerCellDiscovered = true;
                     Debug.Log($"Có {m_gameMng.playerCells.Count} ô người chơi mà kẻ thù tìm thấy!");
                 }
@@ -123,8 +125,8 @@ namespace Sonn.BattleShips
         }
         private bool IsInsideEnemyGrid(int x, int y)
         {
-            return x >= 0 && x < GridManager.Ins.Row &&
-                   y >= 0 && y < GridManager.Ins.Col; 
+            return x >= 0 && x < 10 &&
+                   y >= 0 && y < 10; 
         }    
         private bool IsEnemyShipNextToAnother(List<Cell> occupiedCells)
         {
@@ -136,17 +138,15 @@ namespace Sonn.BattleShips
                 {
                     for (int y = -1; y <= 1; y++)
                     {
-                        if (x == 0 || y == 0)
+                        if (x == 0 && y == 0)
                         {
                             continue;
                         }
                         Vector2Int neighbor = new(CPos.x + x, CPos.y + y);
-                        foreach (var c in m_enemyCellList)
+                        if (IsInsideEnemyGrid(neighbor.x, neighbor.y) &&
+                            m_enemyCell[neighbor.x, neighbor.y].hasEnemyShip)
                         {
-                            if (c.cellPosOnGrid == neighbor && c.hasEnemyShip)
-                            {
-                                return true;
-                            }
+                            return true;
                         }    
                     }    
                 }
@@ -210,12 +210,9 @@ namespace Sonn.BattleShips
 
                 bool vertical = Random.value > 0.5f;
 
-                int maxX = vertical
-                           ? (GridManager.Ins.Row - shipSize)
-                           : (GridManager.Ins.Row - 1);
-                int maxY = vertical
-                           ? (GridManager.Ins.Col - 1)
-                           : (GridManager.Ins.Col - shipSize);
+                int maxX = vertical ? (10 - 1) : (10 - shipSize);
+                int maxY = vertical ? (10 - shipSize) : (10 - 1);
+
                 if (maxX < 0 || maxY < 0)
                 {
                     break;
@@ -233,7 +230,7 @@ namespace Sonn.BattleShips
                 newEnemyShip.name = $"EnemyShip_{shipSize}";
                 newEnemyShip.layer = LayerMask.NameToLayer(Const.ENEMY_SHIP_LAYER);
                 SetTagEnemy(newEnemyShip);
-                newEnemyShip.GetComponent<Collider2D>().enabled = false;
+                newEnemyShip.GetComponentInChildren<Collider2D>().enabled = false;
 
                 Vector3 centerPos = Vector3.zero;
                 foreach (var item in m_occupiedEnemyCells)
@@ -249,11 +246,8 @@ namespace Sonn.BattleShips
                                  );
 
                 var s = newEnemyShip.GetComponent<Ship>();
-                if (s != null)
-                {
-                    s.isRotatedShip = !vertical;
-                    s.isPlacedShip = true;
-                }
+                s.isRotatedShip = !vertical;
+                s.isPlacedShip = true;
 
                 var shipRenderer = newEnemyShip.GetComponentInChildren<SpriteRenderer>();
                 if (shipRenderer != null)
@@ -329,6 +323,7 @@ namespace Sonn.BattleShips
                 }
 
                 isShipEnemyPlaced = true;
+            
             }
         }
         private void SetTagEnemy(GameObject go)
@@ -374,10 +369,10 @@ namespace Sonn.BattleShips
                 return;
             }    
 
-            if (!isEnemySelectedCell)
+            if (!isEnemyShoot && !isEnemySelectedCell)
             {
-                isEnemySelectedCell = true;
                 isEnemyShoot = true;
+                isEnemySelectedCell = true;
                 StartCoroutine(EnemyShootCoroutine());
             }    
         }
@@ -386,15 +381,18 @@ namespace Sonn.BattleShips
             bool keepShooting = true;
             while (keepShooting)
             {
-                yield return new WaitForSeconds(0.5f);
+                yield return new WaitForSeconds(0.3f);
 
                 int prevHitCount = m_currentHitCells.Count;
                 EnemyChoosePlayerCell();
                 bool justHit = (m_currentHitCells.Count > prevHitCount);
                 keepShooting = justHit;
             }
-            isEnemyShoot = false;
             m_gameMng.WaitNextTurn(1);
+
+            isEnemyShoot = false;
+            isEnemySelectedCell = false;
+
         }
         private Vector2Int DirectionToVector(int direction)
         {
@@ -442,7 +440,7 @@ namespace Sonn.BattleShips
         }    
         private Cell FindPlayerCell(Vector2Int pos)
         {
-            foreach (var c in GridManager.Ins.CellList)
+            foreach (var c in GridManager.GetInstance<GridManager>().CellList)
             {
                 if (c != null && c.cellPosOnGrid == pos)
                 {
@@ -519,30 +517,28 @@ namespace Sonn.BattleShips
             int score = 0;
             Vector2Int p = c.cellPosOnGrid;
 
-            for (int i = 0; i < shipSize && i + p.y < GridManager.Ins.Col; i++)
+            for (int i = 0; i < shipSize && p.y + i < GridManager.GetInstance<GridManager>().Col; i++)
             {
                 var cc = FindPlayerCell(new Vector2Int(p.x, p.y + i));
-                if (cc != null && !cc.isHit)
-                {
-                    score++;
-                }
-                else
-                {
-                    break;
-                }
+                if (cc != null && !cc.isHit) score++; else break;
             }
 
-            for (int i = 0; i < shipSize && i + p.x < GridManager.Ins.Row; i++)
+            for (int i = 1; i < shipSize && p.y - i >= 0; i++)
+            {
+                var cc = FindPlayerCell(new Vector2Int(p.x, p.y - i));
+                if (cc != null && !cc.isHit) score++; else break;
+            }
+
+            for (int i = 0; i < shipSize && p.x + i < GridManager.GetInstance<GridManager>().Row; i++)
             {
                 var cc = FindPlayerCell(new Vector2Int(p.x + i, p.y));
-                if (cc != null && !cc.isHit)
-                {
-                    score++;
-                }
-                else
-                {
-                    break;
-                }
+                if (cc != null && !cc.isHit) score++; else break;
+            }
+
+            for (int i = 1; i < shipSize && p.x - i >= 0; i++)
+            {
+                var cc = FindPlayerCell(new Vector2Int(p.x - i, p.y));
+                if (cc != null && !cc.isHit) score++; else break;
             }
 
             return score;
@@ -560,6 +556,7 @@ namespace Sonn.BattleShips
                 {
                     Cell target = m_potentialTargetCells[0];
                     m_potentialTargetCells.RemoveAt(0);
+
                     if (target != null && !target.isHit)
                     {
                         m_gameMng.CheckCellIsHit(target, m_gameMng.enemyUI, out bool isHit, out bool isSunk);
@@ -625,12 +622,17 @@ namespace Sonn.BattleShips
                 StopEnemyHunting();
             }
 
+            EnemyChooseRandomCell();
+
+        }
+        private void EnemyChooseRandomCell()
+        {
             int shipLen = 5;
             List<Cell> candidates = new();
             List<Cell> parity = new();
             List<Cell> fallback = new();
 
-            foreach (var ec in GridManager.Ins.CellList)
+            foreach (var ec in GridManager.GetInstance<GridManager>().CellList)
             {
                 if (ec == null || ec.isHit)
                 {
@@ -639,6 +641,7 @@ namespace Sonn.BattleShips
 
                 bool goodParity = ((ec.cellPosOnGrid.x + ec.cellPosOnGrid.y) % 2 == 0);
                 int score = PotentialScore(ec, shipLen);
+
                 if (score > 0)
                 {
                     if (goodParity)
@@ -648,22 +651,18 @@ namespace Sonn.BattleShips
                     else
                     {
                         candidates.Add(ec);
-                    }    
+                    }
+
                 }
                 else
                 {
                     fallback.Add(ec);
-                }    
+                }
             }
 
             if (parity.Count > 0)
             {
                 candidates.AddRange(parity);
-            }
-
-            if (candidates.Count == 0)
-            {
-                candidates = fallback;
             }
 
             if (candidates.Count > 0)
@@ -675,36 +674,48 @@ namespace Sonn.BattleShips
                 Cell chosen = candidates[Random.Range(0, take)];
 
                 m_gameMng.CheckCellIsHit(chosen, m_gameMng.enemyUI, out bool isEnemyHit, out bool isSunkShip);
-                
-                if (isEnemyHit)
-                {
-                    EnemyRigisterHit(chosen);
-                    if (isSunkShip)
-                    {
-                        StopEnemyHunting();
-                    }    
-                }
+                ReserveToHuntingPlayerShip(chosen, isEnemyHit, isSunkShip);
                 return;
             }
 
-            foreach (var c in GridManager.Ins.CellList)
+            foreach (var c in GridManager.GetInstance<GridManager>().CellList)
             {
                 if (c != null && !c.isHit)
                 {
                     m_gameMng.CheckCellIsHit(c, m_gameMng.enemyUI, out bool isEnemyHit, out bool isSunkShip);
-                    
-                    if (isEnemyHit)
-                    {
-                        EnemyRigisterHit(c);
-                        if (isSunkShip)
-                        {
-                            StopEnemyHunting();
-                        }
-                    }
+                    ReserveToHuntingPlayerShip(c, isEnemyHit, isSunkShip);
                     return;
+                }
+            }
+        }
+        private void ReserveToHuntingPlayerShip(Cell c, bool isEnemyHit, bool isPlayerShipSunk)
+        {
+            if (isEnemyHit)
+            {
+                EnemyRigisterHit(c);
+
+                if (isPlayerShipSunk)
+                {
+                    StopEnemyHunting();
+                }
+                else
+                {
+                    isEnemyHunting = true;
+                    m_enemyFirstHit = c.cellPosOnGrid;
+                    m_enemyLastHit = c.cellPosOnGrid;
+                    m_enemyDirConfirmed = false;
+                    m_enemyReservedTried = false;
+                    m_enemyHuntDir = -1;
+
+                    m_potentialTargetCells.Clear();
+                    int[] dir = new[] { 0, 1, 2, 3 };
+                    foreach (var i in dir)
+                    {
+                        EnemyAddPotentialTarget(FindPlayerCell(c.cellPosOnGrid + DirectionToVector(i)));
+                    }
                 }    
             }    
-        }        
+        }    
     }
 }
 

@@ -1,88 +1,122 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 namespace Sonn.BattleShips
 {
-    public class GameManager : MonoBehaviour, IComponentChecking
+    public class GameManager : MonoBehaviour
     {
-        public Image yourTurnImg, enemyturnImg;
-        public int turn = 1, playerShipCount, enemyShipCount;
+        public Image playerTurnImg, enemyTurnImg;
+        public int playerShipCount, enemyShipCount;
         public GameObject hitPrefab, missPrefab;
         public List<GameObject> playerUI, enemyUI, enemyCells, playerCells;
         public GameOverDialog gameOverDialog;
         public GameWinDialog gameWinDialog;
 
-        private Player m_player;
+        private Player_1 m_player_1;
+        private Player_2 m_player_2;
         private EnemyAI m_enemy;
+        private int m_turn = 1;
 
         private void Awake()
         {
-            m_player = FindObjectOfType<Player>();
-            m_enemy = FindObjectOfType<EnemyAI>();
+            m_player_1 = FindObjectOfType<Player_1>();
+
+            Scene sc = SceneManager.GetActiveScene();
+            if (sc.name == Const.GAME_PLAY_1_VS_1_SCENE)
+            {
+                m_player_2 = FindObjectOfType<Player_2>();
+                m_enemy = null;
+            }
+            else if (sc.name == Const.GAME_PLAY_1_VS_AI_SCENE)
+            {
+                m_enemy = FindObjectOfType<EnemyAI>();
+                m_player_2 = null;
+            }
+
         }   
         private void Update()
         {
-            if (IsComponentNull())
-            {
-                return;
-            }
-            m_player.PlayerFindEnemyCell();
-            m_enemy.EnemyFindPlayerCell();
-            CheckTurn();
-            CheckEndGame();
+            UpdateWithSceneActive(SceneManager.GetActiveScene());
         }
-        public bool IsComponentNull()
+        private void UpdateWithSceneActive(Scene sc)
         {
-            bool check = m_player == null || m_enemy == null;
-            if (check)
+            if (sc != null)
             {
-                Debug.LogWarning("Có component bị rỗng. Hãy kiểm tra lại!");
-            }
-            return check;
-        }
-        private void CheckTurn()
-        {
-            if (turn == 1)
-            {
-                PlayerTurn();
+                m_player_1.PlayerFindEnemyCell(ref sc);
 
+                if (sc.name == Const.GAME_PLAY_1_VS_1_SCENE)
+                {
+                    m_player_2.Player_2_FindPlayer_1_Cell();
+                }
+                else if (sc.name == Const.GAME_PLAY_1_VS_AI_SCENE)
+                {
+                    m_enemy.EnemyFindPlayerCell();
+                }
+
+                CheckTurnWithScene(ref sc);
+                CheckEndGame();
             }
-            else if (turn == 2 && !m_enemy.isEnemyShoot)
+        }    
+        private void CheckTurnWithScene(ref Scene sc)
+        {
+            if (sc != null)
             {
-                EnemyTurn();
-            }    
+                if (m_turn == 1)
+                {
+                    PlayerTurn(ref sc);
+                }
+                else if (m_turn == 2)
+                {
+                    if (sc.name == Const.GAME_PLAY_1_VS_AI_SCENE)
+                    {
+                        EnemyTurn();
+                    }
+                    else if (sc.name == Const.GAME_PLAY_1_VS_1_SCENE)
+                    {
+                        Player_2_Turn();
+                    }
+                }
+            }
+        }
+        private void Player_2_Turn()
+        {
+            SetUI(false);
+            m_player_2.Player_2_Turning();
         }
         private void EnemyTurn()
         {
             SetUI(false);
             m_enemy.EnemyTurning();
         }
-        private void PlayerTurn()
+        private void PlayerTurn(ref Scene sc)
         {
-            SetUI(true);
-            m_player.PlayerTurning();
+            if (sc != null)
+            {
+                SetUI(true);
+                m_player_1.PlayerTurning(ref sc);
+            }
         }
         private void CheckEndGame()
         {
             if (enemyShipCount == 0)
             {
                 gameWinDialog.Show(true);
-                turn = 0;
+                m_turn = 0;
             }
             else if (playerShipCount == 0)
             {
                 gameOverDialog.Show(true);
-                turn = 0;
+                m_turn = 0;
             }    
-        }
+        }    
         IEnumerator Wait(int number)
         {
             yield return new WaitForSeconds(1.5f);
-            turn = number;
-            m_player.isSelectedCell = false;
-            m_enemy.isEnemySelectedCell = false;
+            m_turn = number;
         }    
         public void WaitNextTurn(int num)
         {
@@ -90,8 +124,8 @@ namespace Sonn.BattleShips
         } 
         private void SetUI(bool isPlayerTurn)
         {
-            yourTurnImg.gameObject.SetActive(isPlayerTurn);
-            enemyturnImg.gameObject.SetActive(!isPlayerTurn);
+            playerTurnImg.gameObject.SetActive(isPlayerTurn);
+            enemyTurnImg.gameObject.SetActive(!isPlayerTurn);   
         }    
         public void CheckCellIsHit(Cell c, List<GameObject> list, 
                                    out bool ShootIsHit, out bool isSunkShip)
@@ -106,7 +140,7 @@ namespace Sonn.BattleShips
 
             c.isHit = true;
             
-            if (c.hasEnemyShip || c.hasPlayerShip)
+            if (c.hasEnemyShip || c.hasPlayerOneShip || c.hasPlayerTwoShip)
             {
                 var newHit = Instantiate(hitPrefab, c.transform.position, Quaternion.identity);
                 
@@ -118,14 +152,18 @@ namespace Sonn.BattleShips
                 if (part != null)
                 {
                     var ship = part.GetComponentInParent<Ship>();
-                    isSunkShip = TryHandleShipSunk(ship);
+                    Scene sc = SceneManager.GetActiveScene();
+                    if (sc != null)
+                    {
+                       isSunkShip = TryHandleShipSunk(ship, sc.name);
+                    }
                 }
                 
-                if (turn == 1)
+                if (m_turn == 1)
                 {
                     enemyShipCount--;
                 }
-                else if (turn == 2)
+                else if (m_turn == 2)
                 {
                     playerShipCount--;
                 }
@@ -137,24 +175,37 @@ namespace Sonn.BattleShips
                 list.Add(newMiss);
             }
         }
-        private bool TryHandleShipSunk(Ship ship)
+        private bool TryHandleShipSunk(Ship ship, string nameScene)
         {
             if (ship == null || ship.isSunkShip)
             {
                 return false;
             }
 
-            int shipLayer = ship.gameObject.layer;
+            if (nameScene == Const.GAME_PLAY_1_VS_AI_SCENE)
+            {
+                CheckShipLayerSunk(ship, Const.PLAYER_1_SHIP_LAYER, Const.ENEMY_SHIP_LAYER);
+            }
+            else if (nameScene == Const.GAME_PLAY_1_VS_1_SCENE)
+            {
+                CheckShipLayerSunk(ship, Const.PLAYER_1_SHIP_LAYER, Const.PLAYER_2_SHIP_LAYER);
+            }
+            
+            return true;
+        }
+        private void CheckShipLayerSunk(Ship s, string tagPlayer, string tagEnemy)
+        {
+            int shipLayer = s.gameObject.layer;
 
-            bool isEnemyShip = shipLayer == LayerMask.NameToLayer(Const.ENEMY_SHIP_LAYER);
-            bool isPlayerShip = shipLayer == LayerMask.NameToLayer(Const.PLAYER_SHIP_LAYER);
+            bool isEnemyShip = shipLayer == LayerMask.NameToLayer(tagEnemy);
+            bool isPlayerShip = shipLayer == LayerMask.NameToLayer(tagPlayer);
 
             var sourceCells = isEnemyShip ? enemyCells :
                               isPlayerShip ? playerCells : null;
-            
+
             if (sourceCells == null || sourceCells.Count <= 0)
             {
-                return false;
+                return;
             }
 
             List<Cell> shipObjCell = new();
@@ -167,9 +218,9 @@ namespace Sonn.BattleShips
                 }
 
                 var cell = cellObj.GetComponent<Cell>();
-                if (cell != null && 
-                    cell.shipPartTransform != null && 
-                    cell.shipPartTransform.IsChildOf(ship.transform))
+                if (cell != null &&
+                    cell.shipPartTransform != null &&
+                    cell.shipPartTransform.IsChildOf(s.transform))
                 {
                     shipObjCell.Add(cell);
                 }
@@ -177,32 +228,30 @@ namespace Sonn.BattleShips
 
             if (shipObjCell.Count <= 0)
             {
-                return false;
+                return;
             }
 
             foreach (var c in shipObjCell)
             {
                 if (c != null && !c.isHit)
                 {
-                    return false;
+                    return;
                 }
             }
 
-            ship.isSunkShip = true;
+            s.isSunkShip = true;
 
-            var shipRenderer = ship.GetComponentInChildren<SpriteRenderer>();
+            var shipRenderer = s.GetComponentInChildren<SpriteRenderer>();
             if (shipRenderer != null)
             {
                 shipRenderer.enabled = true;
             }
 
-            ship.GetComponent<Collider2D>().enabled = true;    
+            s.GetComponentInChildren<Collider2D>().enabled = true;
 
-            ship.gameObject.layer = LayerMask.NameToLayer(Const.DEAD_LAYER);
-            
-            Debug.Log($"Tàu {ship.name} của phe {(isEnemyShip ? "Enemy" : "Player")} đã bị đánh chìm!");
-            
-            return true;
+            s.gameObject.layer = LayerMask.NameToLayer(Const.DEAD_LAYER);
+
+            Debug.Log($"Tàu {s.name} của phe {(isEnemyShip ? "Enemy" : "Player")} đã bị đánh chìm!");
         }
     }
 }

@@ -1,11 +1,13 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace Sonn.BattleShips
 {
     public class LicenseDialog : Dialog, IComponentChecking
     {
+        public Button licenseBtn;
         public bool IsComponentNull()
         {
             bool check = AudioManager.Ins == null;
@@ -20,11 +22,13 @@ namespace Sonn.BattleShips
         {
             AudioManager.Ins.PlaySFX(AudioManager.Ins.buttonClickSource);
             base.Show(isShow);
+            licenseBtn.gameObject.SetActive(false);
         }
 
         public override void Close()
         {
             base.Close();
+            licenseBtn.gameObject.SetActive(true);
         }
 
     }

@@ -1,27 +1,39 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace Sonn.BattleShips
 {
     public class ShipManager : MonoBehaviour, IComponentChecking
     {
-        public static ShipManager Ins;
-
         public GameObject[] shipPrefabs;
         public Vector3 offsetPos;
         public int shipCount;
         public bool isPlacingShip;
-
-        private float m_shipDistance = 1.3f;
+        
+        private static Dictionary<Type, MonoBehaviour> m_ins;
+        
+        private readonly float m_shipDistance = 1.3f;
         private Ship m_selectedShip;
         private List<Ship> m_shipList;
         private Vector3 m_chosenPos;
 
         public List<Ship> ShipList { get => m_shipList; }
+        
+        public static T GetInstance<T>() where T : MonoBehaviour
+        {
+            if (m_ins.TryGetValue(typeof(T), out var ins))
+            {
+                return ins as T;
+            }
+            return null;
+        }
 
         private void Awake()
         {
+            m_ins = new();
             m_selectedShip = null;
             m_chosenPos = Vector3.zero;
             m_shipList = new();
@@ -29,7 +41,7 @@ namespace Sonn.BattleShips
         }
         private void Start()
         {
-            SetShipOnScreen();
+            SetShipOnScreen(SceneManager.GetActiveScene());
             OffsetOfShips();
             shipCount = m_shipList.Count;
         }
@@ -37,18 +49,19 @@ namespace Sonn.BattleShips
         {
             if (Input.GetMouseButtonDown(0))
             {
-                HandleMouseClick();
+                HandleMouseClick(SceneManager.GetActiveScene());
             }
         }
-        private void SetShipOnScreen()
+        private void SetShipOnScreen(Scene sc)
         {
             if (shipPrefabs.Length <= 0 || IsComponentNull())
             {
                 return;
             }
+
             for (int i = 0; i < shipPrefabs.Length; i++)
             {
-                GameObject ship = Instantiate(shipPrefabs[i], Vector3.zero, Quaternion.identity);
+                var ship = Instantiate(shipPrefabs[i], Vector3.zero, Quaternion.identity);
                 if (ship == null)
                 {
                     continue;
@@ -59,19 +72,29 @@ namespace Sonn.BattleShips
                 ship.transform.SetParent(transform);
                 ship.name = shipPrefabs[i].name;
 
-                Ship shipClone = ship.GetComponent<Ship>();
-                if (shipClone != null)
+                if (sc.name == Const.SET_PLACESHIP_PLAYER_2_SCENE)
                 {
-                    m_shipList.Add(shipClone);
-                }
+                    SetLayerShip(ship, LayerMask.NameToLayer(Const.PLAYER_2_SHIP_LAYER));
+                }    
+
+                var shipClone = ship.GetComponent<Ship>();
+                m_shipList.Add(shipClone);
             }
             Debug.Log($"Có {m_shipList.Count} tàu đã được lưu lại!");
+        }
+        private void SetLayerShip(GameObject ship, int layer)
+        {
+            ship.layer = layer;
+            foreach (Transform t in ship.transform)
+            {
+                t.gameObject.layer = layer;
+            }
         }
         private void OffsetOfShips()
         {
             transform.position += offsetPos;
         }
-        private void HandleMouseClick()
+        private void HandleMouseClick(Scene sc)
         {
             if (IsComponentNull())
             {
@@ -80,26 +103,27 @@ namespace Sonn.BattleShips
 
             Vector3 mouseWorldPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
             RaycastHit2D hit = Physics2D.Raycast(mouseWorldPos, Vector2.zero);
-
             if (hit.collider == null)
             {
                 return;
             }
-
-            if (hit.collider.CompareTag(Const.PLAYER_CELL_TAG))
+            
+            if (sc.name == Const.SET_PLACESHIP_PLAYER_1_SCENE)
             {
-                PlaceShipOnGrid(hit);
-            }
-            else if (hit.collider.GetComponent<Ship>() != null)
-            {
-                if (hit.collider.gameObject.layer == LayerMask.NameToLayer(Const.ENEMY_SHIP_LAYER))
+                if (hit.collider.CompareTag(Const.PLAYER_1_CELL_TAG))
                 {
-                    Debug.Log($"Không thể chọn tàu địch: {hit.collider.name}");
-                    return;
+                    PlaceShipOnGrid(hit, sc.name, Const.PLAYER_1_CELL_TAG, Const.PLAYER_1_SHIP_LAYER);
                 }
-
-                SelectShip(hit);
             }
+            else if (sc.name == Const.SET_PLACESHIP_PLAYER_2_SCENE)
+            {
+                if (hit.collider.CompareTag(Const.PLAYER_2_CELL_TAG))
+                {
+                    PlaceShipOnGrid(hit, sc.name, Const.PLAYER_2_CELL_TAG, Const.PLAYER_2_SHIP_LAYER);
+                }
+            }
+
+            SelectShip(hit);
         }
         private void SelectShip(RaycastHit2D hit)
         {
@@ -116,9 +140,7 @@ namespace Sonn.BattleShips
                 return;
             }
 
-            if (clickedShip.isPlacedShip && 
-                clickedShip.gameObject.layer == 
-                LayerMask.NameToLayer(Const.PLAYER_SHIP_LAYER))
+            if (clickedShip.isPlacedShip)
             {
                 Debug.Log($"{clickedShip.name} đã được đặt rồi!");
                 return;
@@ -138,25 +160,15 @@ namespace Sonn.BattleShips
             Debug.Log($"Đã chọn tàu {m_selectedShip.name}!");
             isPlacingShip = true;
         }
-        private void PlaceShipOnGrid(RaycastHit2D hit)
+        private void PlaceShipOnGrid(RaycastHit2D hit, string nameScene, 
+                        string tagname, string layername)
         {
             if (hit.collider == null || 
-                !hit.collider.CompareTag(Const.PLAYER_CELL_TAG) || 
+                !hit.collider.CompareTag(tagname) ||
+                m_selectedShip == null ||
                 IsComponentNull())
             {
-                return;
-            }
-            
-            if (hit.collider.CompareTag(Const.PLAYER_CELL_TAG) 
-                && m_selectedShip == null)
-            {
-                Debug.Log("Hãy chọn tàu để click vào lưới!");
-                return;
-            }    
-
-            Cell cell = hit.collider.GetComponent<Cell>();
-            if (cell == null)
-            {
+                Debug.LogWarning("Không có tàu nào được chọn để đặt!");
                 return;
             }
 
@@ -168,69 +180,75 @@ namespace Sonn.BattleShips
                 Debug.Log("Tàu đặt ngoài phạm vi lưới. Hãy đặt lại!");
                 return;
             }
-            if (m_selectedShip.CheckForOverlappingShips())
+
+            if (m_selectedShip.CheckForOverlappingShips(layername))
             {
                 return;
             }
 
-            var newCells = m_selectedShip.GetOccupiedCells();
-            if (IsShipNextToAnotherShip(newCells))
+            var newCells = m_selectedShip.GetOccupiedCells(tagname);
+            if (IsShipNextToAnotherShip(newCells, nameScene))
             {
                 Debug.Log("Không được đặt tàu cạnh nhau!");
                 return;
             }
+
+            List<Transform> shipParts = new();
+            foreach (Transform part in m_selectedShip.transform)
+            {
+                shipParts.Add(part);
+            }
+            bool isVertical = m_selectedShip.IsVertical();
+            if (isVertical)
+            {
+                shipParts.Sort((a, b) => a.position.y.CompareTo(b.position.y));
+            }
             else
             {
-                List<Transform> shipParts = new();
-                foreach (Transform part in m_selectedShip.transform)
-                {
-                    shipParts.Add(part);
-                }    
-                bool isVertical = m_selectedShip.IsVertical();
-                if (isVertical)
-                {
-                    shipParts.Sort((a, b) => a.position.y.CompareTo(b.position.y));
-                }
-                else
-                {
-                    shipParts.Sort((a, b) => a.position.x.CompareTo(b.position.x));
-                }
-
-                for (int i = 0; i < newCells.Count; i++)
-                {
-                    var playerCell = newCells[i];
-                    var shipPart = shipParts[i];
-
-                    shipPart.position = playerCell.transform.position;
-                    playerCell.hasPlayerShip = true;
-                    playerCell.shipPartTransform = shipPart;
-                }
-
-                Debug.Log($"{m_selectedShip.name} đã đặt lên lưới!");
-
-                m_selectedShip.isSelectedShip = false;
-                m_selectedShip.isPlacedShip = true;
-                m_selectedShip.StopFlashing();
-
-                Debug.Log($"Trạng thái của {m_selectedShip.name}: {(m_selectedShip.isSunkShip ? "Chìm" : "Nổi")}");
-
-                shipCount--;
-
+                shipParts.Sort((a, b) => a.position.x.CompareTo(b.position.x));
             }
+
+            for (int i = 0; i < newCells.Count; i++)
+            {
+                var playerCell = newCells[i];
+                var shipPart = shipParts[i];
+
+                shipPart.position = playerCell.transform.position;
+                
+                if (nameScene == Const.SET_PLACESHIP_PLAYER_1_SCENE)
+                {
+                    playerCell.hasPlayerOneShip = true;
+                }
+                else if (nameScene == Const.SET_PLACESHIP_PLAYER_2_SCENE)
+                {
+                    playerCell.hasPlayerTwoShip = true;
+                }    
+
+                playerCell.shipPartTransform = shipPart;
+            }
+
+            Debug.Log($"{m_selectedShip.name} đã đặt lên lưới!");
+
+            m_selectedShip.isSelectedShip = false;
+            m_selectedShip.isPlacedShip = true;
+            m_selectedShip.StopFlashing();
+
+            Debug.Log($"Trạng thái của {m_selectedShip.name}: {(m_selectedShip.isSunkShip ? "Chìm" : "Nổi")}");
+
+            shipCount--;
 
             if (shipCount == 0)
             {
                 Debug.Log("Bạn đã đặt hết tàu!");
-                Manage.Ins.playGameBtn.gameObject.SetActive(true);
+                Manage.GetIns<Manage>().ShowBtnNextOrPlay(nameScene);
             }
 
             m_selectedShip = null;
             m_chosenPos = Vector3.zero;
             isPlacingShip = false;
 
-
         }
-        private bool IsShipNextToAnotherShip(List<Cell> occupiedCells)
+        private bool IsShipNextToAnotherShip(List<Cell> occupiedCells, string nameSc)
         {
             foreach (var cell in occupiedCells)
             {
@@ -244,12 +262,23 @@ namespace Sonn.BattleShips
                             continue;
                         }
                         Vector2 neighborCellPos = new(cellPos.x + x, cellPos.y + y);
-                        foreach (var c in GridManager.Ins.CellList)
+                        foreach (var c in GridManager.GetInstance<GridManager>().CellList)
                         {
-                            if (c.cellPosOnGrid == neighborCellPos 
-                                && c.hasPlayerShip)
+                            if (nameSc == Const.SET_PLACESHIP_PLAYER_1_SCENE)
                             {
-                                return true;
+                                if (c.cellPosOnGrid == neighborCellPos
+                                && c.hasPlayerOneShip)
+                                {
+                                    return true;
+                                }
+                            }
+                            else if (nameSc == Const.SET_PLACESHIP_PLAYER_2_SCENE)
+                            {
+                                if (c.cellPosOnGrid == neighborCellPos
+                                && c.hasPlayerTwoShip)
+                                {
+                                    return true;
+                                }
                             }    
                         }    
                     }
@@ -259,7 +288,9 @@ namespace Sonn.BattleShips
         }    
         public bool IsComponentNull()
         {
-            bool check = GridManager.Ins == null || Manage.Ins == null;
+            var gridMng = GridManager.GetInstance<GridManager>();
+            var Mng = Manage.GetIns<Manage>();
+            bool check = gridMng == null || Mng == null;
             if (check)
             {
                 Debug.LogWarning("Có component bị rỗng. Hãy kiểm tra lại!");
@@ -273,17 +304,61 @@ namespace Sonn.BattleShips
                 m_selectedShip.RotateShip();
             }    
         }
+        
         private void MakeSingleton()
         {
-            if (Ins == null)
+            var key = GetType();
+
+            if (!m_ins.ContainsKey(key) || m_ins[key] == null)
             {
-                Ins = this;
+                m_ins[key] = this;
                 DontDestroyOnLoad(this);
+                SceneManager.sceneLoaded += OnSceneLoaded;
             }
             else
             {
                 Destroy(gameObject);
             }
+
+        }
+
+        private void OnDestroy()
+        {
+            SceneManager.sceneLoaded -= OnSceneLoaded;
+
+            var key = GetType();
+
+            if (m_ins.ContainsKey(key) && m_ins[key] == this)
+            {
+                m_ins.Remove(key);
+            }
+        }
+        private void OnSceneLoaded(Scene sc, LoadSceneMode mode)
+        {
+            string sceneName = sc.name;
+
+            if (sceneName == Const.SET_PLACESHIP_PLAYER_2_SCENE)
+            {
+                if (IsSceneSetPlaceShipPlayer_1_Object())
+                {
+                    gameObject.SetActive(false);
+                }
+            }
+            else if (sceneName == Const.GAME_PLAY_1_VS_1_SCENE)
+            {
+                if (IsSceneSetPlaceShipPlayer_1_Object())
+                {
+                    gameObject.SetActive(true);
+                }
+            }
+            else if (sceneName == Const.MAIN_MENU_SCENE)
+            {
+                Destroy(gameObject);
+            }
+        }
+        private bool IsSceneSetPlaceShipPlayer_1_Object()
+        {
+            return gameObject.CompareTag(Const.SET_PLACESHIP_PLAYER_1_TAG);
         }
     }
 }

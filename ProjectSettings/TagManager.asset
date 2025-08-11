@@ -4,11 +4,7 @@
 TagManager:
   serializedVersion: 2
   tags:
-  - PlayerCell
   - EnemyCell
-  - Mainmenu
-  - Setplaceships
-  - Gameplay
   - PlayerShip2
   - PlayerShip3
   - PlayerShip4
@@ -45,10 +41,14 @@ TagManager:
   - EnemyShipPart5_3
   - EnemyShipPart5_4
   - EnemyShipPart5_5
-  - Ship_2_Parts
-  - Ship_3_Parts
-  - Ship_4_Parts
-  - Ship_5_Parts
+  - Mainmenu
+  - Setplaceship_Player_1
+  - Setplaceship_Player_2
+  - Gameplay_1vsAI
+  - Gameplay_1vs1
+  - Setplaceship_1vsAI
+  - Player_1_Cell
+  - Player_2_Cell
   layers:
   - Default
   - TransparentFX
@@ -56,13 +56,13 @@ TagManager:
   - 
   - Water
   - UI
-  - PlayerShip
+  - Player_1_Ship
   - EnemyShip
-  - PlayerCell
+  - Player_1_Cell
   - EnemyCell
   - Dead
-  - 
-  - 
+  - Player_2_Ship
+  - Player_2_Cell
   - 
   - 
   - 

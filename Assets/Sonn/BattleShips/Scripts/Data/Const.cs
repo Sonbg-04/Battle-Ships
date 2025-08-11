@@ -2,10 +2,12 @@ namespace Sonn.BattleShips
 {
     public class Const
     {
-        public const string PLAYER_SHIP_LAYER = "PlayerShip";
+        public const string PLAYER_1_SHIP_LAYER = "Player_1_Ship";
+        public const string PLAYER_2_SHIP_LAYER = "Player_2_Ship";
         public const string ENEMY_SHIP_LAYER = "EnemyShip";
         
-        public const string PLAYER_CELL_LAYER = "PlayerCell";
+        public const string PLAYER_1_CELL_LAYER = "Player_1_Cell";
+        public const string PLAYER_2_CELL_LAYER = "Player_2_Cell";
         public const string ENEMY_CELL_LAYER = "EnemyCell";
 
         public const string DEAD_LAYER = "Dead";
@@ -56,7 +58,8 @@ namespace Sonn.BattleShips
         public const string ENEMY_SHIP_PART_5_4_TAG = "EnemyShipPart5_4";
         public const string ENEMY_SHIP_PART_5_5_TAG = "EnemyShipPart5_5";
 
-        public const string PLAYER_CELL_TAG = "PlayerCell";
+        public const string PLAYER_1_CELL_TAG = "Player_1_Cell";
+        public const string PLAYER_2_CELL_TAG = "Player_2_Cell";
         public const string ENEMY_CELL_TAG = "EnemyCell";
 
         public const string MUSIC_VOL_MIXER = "MusicGame";
@@ -66,13 +69,19 @@ namespace Sonn.BattleShips
         public const string SFX_VOlUME = "SFXVolume";
 
         public const string MAIN_MENU_SCENE = "Mainmenu";
-        public const string SET_PLACESHIPS_SCENE = "Setplaceships";
-        public const string GAME_PLAY_SCENE = "Gameplay";
+        public const string SET_PLACESHIP_1_VS_AI_SCENE = "Setplaceship_1VsAI";
+        public const string SET_PLACESHIP_PLAYER_1_SCENE = "Setplaceship_Player_1";
+        public const string SET_PLACESHIP_PLAYER_2_SCENE = "Setplaceship_Player_2";
+        public const string GAME_PLAY_1_VS_AI_SCENE = "Gameplay_1VsAI";
+        public const string GAME_PLAY_1_VS_1_SCENE = "Gameplay_1Vs1";
+        
 
         public const string MAIN_MENU_TAG = "Mainmenu";
-        public const string SET_PLACESHIPS_TAG = "Setplaceships";
-        public const string GAME_PLAY_TAG = "Gameplay";
-
+        public const string SET_PLACESHIP_1_VS_AI_TAG = "Setplaceship_1vsAI";
+        public const string SET_PLACESHIP_PLAYER_1_TAG = "Setplaceship_Player_1";
+        public const string SET_PLACESHIP_PLAYER_2_TAG = "Setplaceship_Player_2";
+        public const string GAME_PLAY_1_VS_AI_TAG = "Gameplay_1vsAI";
+        public const string GAME_PLAY_1_VS_1_TAG = "Gameplay_1vs1";
 
     }
 }

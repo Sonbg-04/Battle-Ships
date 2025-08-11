@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Sonn.BattleShips
 {
-    public class Ship : MonoBehaviour, IComponentChecking
+    public class Ship : MonoBehaviour
     {
         public bool isSunkShip, isSelectedShip, 
                     isPlacedShip, isRotatedShip;
@@ -58,7 +58,7 @@ namespace Sonn.BattleShips
                 yield return new WaitForSeconds(0.2f);
             }
         }    
-        public List<Cell> GetOccupiedCells()
+        public List<Cell> GetOccupiedCells(string nameTagLayer)
         {
             m_occupiedCells.Clear();
 
@@ -70,12 +70,12 @@ namespace Sonn.BattleShips
                 Vector2 sizePos = part.bounds.size;
 
                 Collider2D[] results = Physics2D.OverlapBoxAll(
-                    centerPos, sizePos, 0, LayerMask.GetMask(Const.PLAYER_CELL_LAYER)
+                    centerPos, sizePos, 0, LayerMask.GetMask(nameTagLayer)
                     );
 
                 foreach (var cell in results)
                 {
-                    if (cell.CompareTag(Const.PLAYER_CELL_TAG))
+                    if (cell.CompareTag(nameTagLayer))
                     {
                         var c = cell.GetComponent<Cell>();
                         if (c != null && !m_occupiedCells.Contains(c))
@@ -89,11 +89,6 @@ namespace Sonn.BattleShips
         }
         public void MoveShip(Vector3 pos)
         {
-            if (IsComponentNull())
-            {
-                return;
-            }   
-            
             if (isRotatedShip)
             {
                 transform.position = new Vector3(pos.x + offsetPos.x, pos.y, 0);
@@ -115,12 +110,12 @@ namespace Sonn.BattleShips
             }
 
             Bounds b = rd.bounds;
-            return b.min.x >= GridManager.Ins.minBound.x 
-                && b.max.x <= GridManager.Ins.maxBound.x
-                && b.min.y >= GridManager.Ins.minBound.y 
-                && b.max.y <= GridManager.Ins.maxBound.y;
+            return b.min.x >= GridManager.GetInstance<GridManager>().minBound.x 
+                && b.max.x <= GridManager.GetInstance<GridManager>().maxBound.x
+                && b.min.y >= GridManager.GetInstance<GridManager>().minBound.y 
+                && b.max.y <= GridManager.GetInstance<GridManager>().maxBound.y;
         }
-        public bool CheckForOverlappingShips()
+        public bool CheckForOverlappingShips(string nameLayer)
         {
             bool check = false;
             Collider2D[] shipParts = GetComponentsInChildren<Collider2D>();
@@ -133,8 +128,10 @@ namespace Sonn.BattleShips
                 Vector2 centerPos = part.bounds.center;
                 Vector2 sizePos = part.bounds.size;
                 Collider2D[] hits = Physics2D.OverlapBoxAll(
-                    centerPos, sizePos, 
-                    0, LayerMask.GetMask(Const.PLAYER_SHIP_LAYER));
+                    centerPos, 
+                    sizePos, 
+                    0, 
+                    LayerMask.GetMask(nameLayer));
 
                 foreach (var hit in hits)
                 {
@@ -144,15 +141,6 @@ namespace Sonn.BattleShips
                         check = true;
                     }    
                 }    
-            }
-            return check;
-        }
-        public bool IsComponentNull()
-        {
-            bool check = Manage.Ins == null || GridManager.Ins == null;
-            if (check)
-            {
-                Debug.LogWarning("Có component bị rỗng. Hãy kiểm tra lại!");
             }
             return check;
         }
@@ -178,6 +166,5 @@ namespace Sonn.BattleShips
             float rotZ = transform.eulerAngles.z;
             return Mathf.Approximately(rotZ % 180, 90f);
         }
-
     }
 }

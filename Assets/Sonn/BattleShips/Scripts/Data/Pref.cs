@@ -4,8 +4,14 @@ using UnityEngine;
 
 namespace Sonn.BattleShips
 {
+    public enum GameMode
+    {
+        Player_Player,
+        Player_AI
+    }
     public static class Pref
     {
+        public static GameMode currentMode;
         public static void SetBool(string key, bool value)
         {
             if (value)

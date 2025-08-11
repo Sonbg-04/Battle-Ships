@@ -321,7 +321,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 200, y: -150}
+  m_AnchoredPosition: {x: 500, y: 0}
   m_SizeDelta: {x: 300, y: 300}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &111985238
@@ -791,7 +791,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 800, y: -150}
+  m_AnchoredPosition: {x: 500, y: -300}
   m_SizeDelta: {x: 300, y: 300}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &473002753
@@ -840,7 +840,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1210302542}
         m_TargetAssemblyTypeName: Sonn.BattleShips.PauseDialog, Assembly-CSharp
-        m_MethodName: BackToMenu
+        m_MethodName: Ok
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -1106,8 +1106,8 @@ GameObject:
   - component: {fileID: 610231050}
   - component: {fileID: 610231051}
   m_Layer: 0
-  m_Name: Player
-  m_TagString: Gameplay
+  m_Name: Player_1
+  m_TagString: Gameplay_1vs1
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1139,7 +1139,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 558e768f80e812b4aac95753926d5bec, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  isSelectedCell: 0
+  isSelectedPlayer2Cell: 0
+  isSelectedEnemyCell: 0
 --- !u!1 &667674914
 GameObject:
   m_ObjectHideFlags: 0
@@ -1152,7 +1153,7 @@ GameObject:
   - component: {fileID: 667674917}
   - component: {fileID: 667674916}
   m_Layer: 5
-  m_Name: TitleBar_YourTurn_Img
+  m_Name: TitleBar_Player_1_Turn_Img
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1228,7 +1229,7 @@ GameObject:
   - component: {fileID: 679401089}
   - component: {fileID: 679401088}
   m_Layer: 5
-  m_Name: TitleBar_EnemyTurn_Img
+  m_Name: TitleBar_Player_2_Turn_Img
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1743,8 +1744,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: -140}
-  m_SizeDelta: {x: 0, y: -280}
+  m_AnchoredPosition: {x: 0, y: -67}
+  m_SizeDelta: {x: 0, y: -134}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &750304765
 MonoBehaviour:
@@ -1766,7 +1767,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: ............................
+  m_text: .................
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 125cb55b44b24c4393181402bc6200e6, type: 2}
   m_sharedMaterial: {fileID: 2100000, guid: 125cb55b44b24c4393181402bc6200e6, type: 2}
@@ -3099,8 +3100,8 @@ GameObject:
   - component: {fileID: 1181055779}
   - component: {fileID: 1181055780}
   m_Layer: 0
-  m_Name: GameManager
-  m_TagString: Gameplay
+  m_Name: GameManager_1v1
+  m_TagString: Gameplay_1vs1
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -3129,11 +3130,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 1181055778}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 295ca5dbcde86e64f8074e893fa32bd2, type: 3}
+  m_Script: {fileID: 11500000, guid: d6be3a44dcb1edd4b9f6ff269f65d54b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  yourTurnImg: {fileID: 667674916}
-  enemyturnImg: {fileID: 679401088}
+  playerTurnImg: {fileID: 667674916}
+  enemyTurnImg: {fileID: 679401088}
   turn: 1
   playerShipCount: 17
   enemyShipCount: 17
@@ -3203,6 +3204,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 26513b6af434c2d41b226229c580b5b9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  pauseBtn: {fileID: 574426747}
 --- !u!1 &1229287198
 GameObject:
   m_ObjectHideFlags: 0
@@ -3622,6 +3624,51 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1420520543}
   m_CullTransparentMesh: 1
+--- !u!1 &1422149130
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1422149132}
+  - component: {fileID: 1422149133}
+  m_Layer: 0
+  m_Name: Player_2
+  m_TagString: Gameplay_1vs1
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1422149132
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1422149130}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1422149133
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1422149130}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 52601da987f57964c924dcc0522c2f8a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  isSelectedPlayer1Cell: 0
 --- !u!1 &1438661982
 GameObject:
   m_ObjectHideFlags: 0
@@ -4145,7 +4192,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: your turn
+  m_text: Player 1
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 125cb55b44b24c4393181402bc6200e6, type: 2}
   m_sharedMaterial: {fileID: 2100000, guid: f629c6e43dba4bf38cb74d8860150664, type: 2}
@@ -4442,7 +4489,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: -129.18}
+  m_AnchoredPosition: {x: 0, y: -29.9}
   m_SizeDelta: {x: 1000, y: 300}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1795137479
@@ -4466,8 +4513,8 @@ MonoBehaviour:
   m_StartCorner: 0
   m_StartAxis: 0
   m_CellSize: {x: 300, y: 300}
-  m_Spacing: {x: 0, y: 0}
-  m_Constraint: 2
+  m_Spacing: {x: 0, y: -150}
+  m_Constraint: 1
   m_ConstraintCount: 1
 --- !u!222 &1795137480
 CanvasRenderer:
@@ -4611,62 +4658,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1801703561}
   m_CullTransparentMesh: 1
---- !u!1 &1856672317
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1856672319}
-  - component: {fileID: 1856672318}
-  m_Layer: 0
-  m_Name: Enemy
-  m_TagString: Gameplay
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &1856672318
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1856672317}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 60840246bc39caf45b88a18928c88b71, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  enemyCellPrefab: {fileID: 4427575922521028605, guid: 3d35b7dd3ac5cd34ab6b0ff61b5aa6a3, type: 3}
-  enemyShipPrefabs:
-  - {fileID: 2515166710462198401, guid: b78972f3927d1cd4c84870d9ad73498f, type: 3}
-  - {fileID: 7289382694131385152, guid: 8a21d2696f4d9e048b227374cb2ed356, type: 3}
-  - {fileID: 7289382694131385152, guid: 8a21d2696f4d9e048b227374cb2ed356, type: 3}
-  - {fileID: 2972085623216738244, guid: e178fc12569c1f242999ff77b15486ca, type: 3}
-  - {fileID: 5567125895427682255, guid: 0f7cf34caab10dc4081426380be8e08f, type: 3}
-  offsetPos: {x: 0.87, y: -3.81, z: 0}
-  offsetScalePos: {x: 0.9, y: 0.9, z: 0}
-  isEnemyShoot: 0
-  isEnemySelectedCell: 0
-  isEnemyHunting: 0
---- !u!4 &1856672319
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1856672317}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2012144915
 GameObject:
   m_ObjectHideFlags: 0
@@ -4724,7 +4715,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: enemy turn
+  m_text: Player 2
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 125cb55b44b24c4393181402bc6200e6, type: 2}
   m_sharedMaterial: {fileID: 2100000, guid: f629c6e43dba4bf38cb74d8860150664, type: 2}
@@ -4809,6 +4800,6 @@ SceneRoots:
   - {fileID: 754593981}
   - {fileID: 1654939759}
   - {fileID: 338363919}
-  - {fileID: 1856672319}
   - {fileID: 610231050}
+  - {fileID: 1422149132}
   - {fileID: 1181055779}
