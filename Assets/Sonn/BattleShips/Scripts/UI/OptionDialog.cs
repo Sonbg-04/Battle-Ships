@@ -9,6 +9,7 @@ namespace Sonn.BattleShips
     {
         public override void Show(bool isShow)
         {
+            AudioManager.Ins.PlaySFX(AudioManager.Ins.buttonClickSource);
             base.Show(isShow);
         }
         public override void Close()
@@ -23,8 +24,11 @@ namespace Sonn.BattleShips
             }    
 
             AudioManager.Ins.PlaySFX(AudioManager.Ins.buttonClickSource);
+
             Pref.currentMode = GameMode.Player_Player;
+
             SceneManager.LoadScene(Const.SET_PLACESHIP_PLAYER_1_SCENE);
+
         }
         public void SoloAIEvent()
         {
@@ -34,8 +38,11 @@ namespace Sonn.BattleShips
             }
 
             AudioManager.Ins.PlaySFX(AudioManager.Ins.buttonClickSource);
+
             Pref.currentMode = GameMode.Player_AI;
+
             SceneManager.LoadScene(Const.SET_PLACESHIP_PLAYER_1_SCENE);
+
         }
         public bool IsComponentNull()
         {

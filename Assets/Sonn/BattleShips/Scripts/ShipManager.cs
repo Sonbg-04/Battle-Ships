@@ -146,16 +146,8 @@ namespace Sonn.BattleShips
                 return;
             }
 
-            foreach (var s in m_shipList)
-            {
-                s.isSelectedShip = false;
-                s.StopFlashing();
-            }
-
             m_selectedShip = clickedShip;
             m_selectedShip.isSelectedShip = true;
-            m_selectedShip.isPlacedShip = false;
-            m_selectedShip.isSunkShip = false;
             m_selectedShip.StartFlashing();
             Debug.Log($"Đã chọn tàu {m_selectedShip.name}!");
             isPlacingShip = true;
@@ -261,25 +253,27 @@ namespace Sonn.BattleShips
                         {
                             continue;
                         }
+
                         Vector2 neighborCellPos = new(cellPos.x + x, cellPos.y + y);
                         foreach (var c in GridManager.GetInstance<GridManager>().CellList)
                         {
-                            if (nameSc == Const.SET_PLACESHIP_PLAYER_1_SCENE)
+                            if (c.cellPosOnGrid == neighborCellPos)
                             {
-                                if (c.cellPosOnGrid == neighborCellPos
-                                && c.hasPlayerOneShip)
+                                if (nameSc == Const.SET_PLACESHIP_PLAYER_1_SCENE)
                                 {
-                                    return true;
+                                    if (c.hasPlayerOneShip)
+                                    {
+                                        return true;
+                                    }
                                 }
-                            }
-                            else if (nameSc == Const.SET_PLACESHIP_PLAYER_2_SCENE)
-                            {
-                                if (c.cellPosOnGrid == neighborCellPos
-                                && c.hasPlayerTwoShip)
+                                else if (nameSc == Const.SET_PLACESHIP_PLAYER_2_SCENE)
                                 {
-                                    return true;
+                                    if (c.hasPlayerTwoShip)
+                                    {
+                                        return true;
+                                    }
                                 }
-                            }    
+                            }   
                         }    
                     }
                 }
@@ -304,7 +298,6 @@ namespace Sonn.BattleShips
                 m_selectedShip.RotateShip();
             }    
         }
-        
         private void MakeSingleton()
         {
             var key = GetType();
@@ -321,7 +314,6 @@ namespace Sonn.BattleShips
             }
 
         }
-
         private void OnDestroy()
         {
             SceneManager.sceneLoaded -= OnSceneLoaded;

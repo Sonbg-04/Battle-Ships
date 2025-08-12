@@ -31,5 +31,6 @@ namespace Sonn.BattleShips
             licenseBtn.gameObject.SetActive(true);
         }
 
+        // Nội dung hướng dẫn chơi game sẽ được cập nhật sau ... !!!
     }
 }

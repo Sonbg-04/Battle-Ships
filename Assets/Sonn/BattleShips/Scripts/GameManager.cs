@@ -25,60 +25,53 @@ namespace Sonn.BattleShips
         {
             m_player_1 = FindObjectOfType<Player_1>();
 
-            Scene sc = SceneManager.GetActiveScene();
-            if (sc.name == Const.GAME_PLAY_1_VS_1_SCENE)
+            if (Pref.currentMode == GameMode.Player_Player)
             {
                 m_player_2 = FindObjectOfType<Player_2>();
                 m_enemy = null;
             }
-            else if (sc.name == Const.GAME_PLAY_1_VS_AI_SCENE)
+            else if (Pref.currentMode == GameMode.Player_AI)
             {
                 m_enemy = FindObjectOfType<EnemyAI>();
                 m_player_2 = null;
             }
-
         }   
         private void Update()
         {
-            UpdateWithSceneActive(SceneManager.GetActiveScene());
+            UpdateWithSceneActive();
         }
-        private void UpdateWithSceneActive(Scene sc)
+        private void UpdateWithSceneActive()
         {
-            if (sc != null)
+            m_player_1.PlayerFindEnemyCell();
+
+            if (Pref.currentMode == GameMode.Player_Player)
             {
-                m_player_1.PlayerFindEnemyCell(ref sc);
-
-                if (sc.name == Const.GAME_PLAY_1_VS_1_SCENE)
-                {
-                    m_player_2.Player_2_FindPlayer_1_Cell();
-                }
-                else if (sc.name == Const.GAME_PLAY_1_VS_AI_SCENE)
-                {
-                    m_enemy.EnemyFindPlayerCell();
-                }
-
-                CheckTurnWithScene(ref sc);
-                CheckEndGame();
+                m_player_2.Player_2_FindPlayer_1_Cell();
             }
-        }    
-        private void CheckTurnWithScene(ref Scene sc)
-        {
-            if (sc != null)
+            else if (Pref.currentMode == GameMode.Player_AI)
             {
-                if (m_turn == 1)
+                m_enemy.EnemyFindPlayerCell();
+            }
+
+            CheckTurnWithScene();
+
+            CheckEndGame();
+        }    
+        private void CheckTurnWithScene()
+        {
+            if (m_turn == 1)
+            {
+                PlayerTurn();
+            }
+            else if (m_turn == 2)
+            {
+                if (Pref.currentMode == GameMode.Player_AI)
                 {
-                    PlayerTurn(ref sc);
+                    EnemyTurn();
                 }
-                else if (m_turn == 2)
+                else if (Pref.currentMode == GameMode.Player_Player)
                 {
-                    if (sc.name == Const.GAME_PLAY_1_VS_AI_SCENE)
-                    {
-                        EnemyTurn();
-                    }
-                    else if (sc.name == Const.GAME_PLAY_1_VS_1_SCENE)
-                    {
-                        Player_2_Turn();
-                    }
+                    Player_2_Turn();
                 }
             }
         }
@@ -92,13 +85,10 @@ namespace Sonn.BattleShips
             SetUI(false);
             m_enemy.EnemyTurning();
         }
-        private void PlayerTurn(ref Scene sc)
+        private void PlayerTurn()
         {
-            if (sc != null)
-            {
-                SetUI(true);
-                m_player_1.PlayerTurning(ref sc);
-            }
+            SetUI(true);
+            m_player_1.PlayerTurning();
         }
         private void CheckEndGame()
         {
@@ -112,12 +102,22 @@ namespace Sonn.BattleShips
                 gameOverDialog.Show(true);
                 m_turn = 0;
             }    
-        }    
+        }
         IEnumerator Wait(int number)
         {
             yield return new WaitForSeconds(1.5f);
             m_turn = number;
-        }    
+            if (Pref.currentMode == GameMode.Player_AI)
+            {
+                m_player_1.isSelectedEnemyCell = false;
+                m_enemy.isEnemySelectedCell = false;
+            }
+            else if (Pref.currentMode == GameMode.Player_Player)
+            {
+                m_player_1.isSelectedPlayer2Cell = false;
+                m_player_2.isSelectedPlayer1Cell = false;
+            }
+        }
         public void WaitNextTurn(int num)
         {
             StartCoroutine(Wait(num));
@@ -149,14 +149,12 @@ namespace Sonn.BattleShips
                 ShootIsHit = true;
 
                 var part = c.shipPartTransform;
+
                 if (part != null)
                 {
                     var ship = part.GetComponentInParent<Ship>();
-                    Scene sc = SceneManager.GetActiveScene();
-                    if (sc != null)
-                    {
-                       isSunkShip = TryHandleShipSunk(ship, sc.name);
-                    }
+
+                    isSunkShip = TryHandleShipSunk(ship);
                 }
                 
                 if (m_turn == 1)
@@ -175,22 +173,22 @@ namespace Sonn.BattleShips
                 list.Add(newMiss);
             }
         }
-        private bool TryHandleShipSunk(Ship ship, string nameScene)
+        private bool TryHandleShipSunk(Ship ship)
         {
             if (ship == null || ship.isSunkShip)
             {
                 return false;
             }
 
-            if (nameScene == Const.GAME_PLAY_1_VS_AI_SCENE)
+            if (Pref.currentMode == GameMode.Player_AI)
             {
                 CheckShipLayerSunk(ship, Const.PLAYER_1_SHIP_LAYER, Const.ENEMY_SHIP_LAYER);
             }
-            else if (nameScene == Const.GAME_PLAY_1_VS_1_SCENE)
+            else if (Pref.currentMode == GameMode.Player_Player)
             {
                 CheckShipLayerSunk(ship, Const.PLAYER_1_SHIP_LAYER, Const.PLAYER_2_SHIP_LAYER);
             }
-            
+
             return true;
         }
         private void CheckShipLayerSunk(Ship s, string tagPlayer, string tagEnemy)
@@ -201,7 +199,8 @@ namespace Sonn.BattleShips
             bool isPlayerShip = shipLayer == LayerMask.NameToLayer(tagPlayer);
 
             var sourceCells = isEnemyShip ? enemyCells :
-                              isPlayerShip ? playerCells : null;
+                              isPlayerShip ? playerCells : 
+                              null;
 
             if (sourceCells == null || sourceCells.Count <= 0)
             {

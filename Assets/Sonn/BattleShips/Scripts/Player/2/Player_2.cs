@@ -35,6 +35,7 @@ namespace Sonn.BattleShips
                             m_gameMng.playerCells.Add(o);
                         }
                     }
+
                     m_player_1_CellDiscovered = true;
                     Debug.Log($"Có {m_gameMng.playerCells.Count} ô của người chơi thứ 1 mà người chơi thứ 2 tìm thấy!");
                 }
@@ -51,52 +52,42 @@ namespace Sonn.BattleShips
         }
         public void Player_2_Turning()
         {
-            if (!isSelectedPlayer1Cell && Input.GetMouseButtonDown(0))
+            if (!isSelectedPlayer1Cell)
             {
                 isSelectedPlayer1Cell = true;
-                StartCoroutine(Player_2_ShootCoroutine());
+                StartCoroutine(Player_2_ShootCoroutine(Const.PLAYER_1_CELL_TAG, m_selectedPlayer1Cell));
             }
         }
-        IEnumerator Player_2_ShootCoroutine()
-        {   
-            bool isKeepShooting = true, 
-                 hitLastShot = false;
-
-            while (isKeepShooting)
+        IEnumerator Player_2_ShootCoroutine(string tagEnemycell, Cell selectedCell)
+        {
+            while (true)
             {
                 yield return new WaitUntil(() => Input.GetMouseButtonDown(0));
 
                 RaycastHit2D hit = Physics2D.Raycast(
                     Camera.main.ScreenToWorldPoint(Input.mousePosition),
                     Vector2.zero
-                    );
-                
-                CheckShootScenePlayer(hit, Const.PLAYER_1_CELL_TAG, ref hitLastShot, ref isKeepShooting);
-                
-            }
+                );
 
-            m_gameMng.WaitNextTurn(1);
-
-            m_selectedPlayer1Cell = null;
-            isSelectedPlayer1Cell = false;
-        }
-        private void CheckShootScenePlayer(RaycastHit2D hit, string tag, ref bool lasthit, ref bool keep)
-        {
-            if (hit.collider != null && hit.collider.CompareTag(tag))
-            {
-                var cell = hit.collider.GetComponent<Cell>();
-                if (cell != null && !cell.isHit)
+                if (hit.collider != null && hit.collider.CompareTag(tagEnemycell))
                 {
-                    m_selectedPlayer1Cell = cell;
-                    m_gameMng.CheckCellIsHit(m_selectedPlayer1Cell, m_gameMng.enemyUI, 
-                                             out bool isShootingHit, out _);
-                    lasthit = isShootingHit;
-                    if (!lasthit)
+                    Cell cell = hit.collider.GetComponent<Cell>();
+                    if (!cell.isHit)
                     {
-                        keep = false;
+                        selectedCell = cell;
+
+                        m_gameMng.CheckCellIsHit(selectedCell, m_gameMng.playerUI, out bool isHit, out _);
+
+                        if (!isHit)
+                        {
+                            break;
+                        }
                     }
                 }
             }
+
+            selectedCell = null;
+            m_gameMng.WaitNextTurn(1);
         }
     }
 }

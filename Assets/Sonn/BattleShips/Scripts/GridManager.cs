@@ -61,9 +61,15 @@ namespace Sonn.BattleShips
                     if (sc.name == Const.SET_PLACESHIP_PLAYER_2_SCENE)
                     {
                         cell.tag = Const.PLAYER_2_CELL_TAG;
-                        cell.layer = LayerMask.NameToLayer(Const.PLAYER_2_CELL_LAYER);
-                    }   
-                    
+                        cell.layer = LayerMask.NameToLayer(Const.PLAYER_2_CELL_LAYER); 
+
+                        float h = 74f / 360f;
+                        float s = 58f / 100f;
+                        float v = 69f / 100f;
+                        cell.GetComponentInChildren<SpriteRenderer>().color = Color.HSVToRGB(h, s, v);
+
+                    }
+
                     var c = cell.GetComponent<Cell>();
 
                     m_cells[x, y] = c;

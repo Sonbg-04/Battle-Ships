@@ -36,13 +36,15 @@ namespace Sonn.BattleShips
             {
                 return;
             }
+
             Close();
+
             AudioManager.Ins.PlaySFX(AudioManager.Ins.buttonClickSource);
-           
-            Scene sc = SceneManager.GetActiveScene();
-            if (sc.name == Const.GAME_PLAY_1_VS_1_SCENE)
+
+            if (Pref.currentMode == GameMode.Player_Player)
             {
                 SceneManager.LoadScene(Const.SET_PLACESHIP_PLAYER_1_SCENE);
+
                 GameObject[] objs_1 = GameObject.FindGameObjectsWithTag(Const.SET_PLACESHIP_PLAYER_1_TAG);
                 GameObject[] objs_2 = GameObject.FindGameObjectsWithTag(Const.SET_PLACESHIP_PLAYER_2_TAG);
                 if (objs_1.Length > 0 || objs_2.Length > 0)
@@ -57,9 +59,10 @@ namespace Sonn.BattleShips
                     }
                 }
             }
-            else if (sc.name == Const.GAME_PLAY_1_VS_AI_SCENE)
+            else if (Pref.currentMode == GameMode.Player_AI)
             {
                 SceneManager.LoadScene(Const.SET_PLACESHIP_1_VS_AI_SCENE);
+
                 GameObject[] objs = GameObject.FindGameObjectsWithTag(Const.SET_PLACESHIP_1_VS_AI_TAG);
                 if (objs.Length > 0)
                 {
@@ -76,13 +79,16 @@ namespace Sonn.BattleShips
             {
                 return;
             }
+
             Close();
+
             AudioManager.Ins.PlaySFX(AudioManager.Ins.buttonClickSource);
+
             SceneManager.LoadScene(Const.MAIN_MENU_SCENE);
 
             GameObject[] objs_3 = GameObject.FindGameObjectsWithTag(Const.MAIN_MENU_TAG);
-            Scene sc = SceneManager.GetActiveScene();
-            if (sc.name == Const.GAME_PLAY_1_VS_1_SCENE)
+
+            if (Pref.currentMode == GameMode.Player_Player)
             {
                 GameObject[] objs_1 = GameObject.FindGameObjectsWithTag(Const.SET_PLACESHIP_PLAYER_1_TAG);
                 GameObject[] objs_2 = GameObject.FindGameObjectsWithTag(Const.SET_PLACESHIP_PLAYER_2_TAG);
@@ -102,7 +108,7 @@ namespace Sonn.BattleShips
                     }
                 }
             }
-            else if (sc.name == Const.GAME_PLAY_1_VS_AI_SCENE)
+            else if (Pref.currentMode == GameMode.Player_AI)
             {
                 GameObject[] objs = GameObject.FindGameObjectsWithTag(Const.SET_PLACESHIP_1_VS_AI_TAG);
                 if (objs.Length > 0 || objs_3.Length > 0)
