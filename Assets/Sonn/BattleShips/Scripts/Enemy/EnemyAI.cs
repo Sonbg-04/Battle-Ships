@@ -624,7 +624,6 @@ namespace Sonn.BattleShips
                 if (isPlayerShipSunk)
                 {
                     StopEnemyHunting();
-                    return;
                 }
 
                 isEnemyHunting = true;

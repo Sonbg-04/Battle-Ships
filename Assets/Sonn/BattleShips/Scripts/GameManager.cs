@@ -175,23 +175,25 @@ namespace Sonn.BattleShips
         }
         private bool TryHandleShipSunk(Ship ship)
         {
+            bool isSunkShip = false;
+
             if (ship == null || ship.isSunkShip)
             {
-                return false;
+                return isSunkShip;
             }
 
             if (Pref.currentMode == GameMode.Player_AI)
             {
-                CheckShipLayerSunk(ship, Const.PLAYER_1_SHIP_LAYER, Const.ENEMY_SHIP_LAYER);
+                isSunkShip = CheckShipLayerSunk(ship, Const.PLAYER_1_SHIP_LAYER, Const.ENEMY_SHIP_LAYER);
             }
             else if (Pref.currentMode == GameMode.Player_Player)
             {
-                CheckShipLayerSunk(ship, Const.PLAYER_1_SHIP_LAYER, Const.PLAYER_2_SHIP_LAYER);
+                isSunkShip = CheckShipLayerSunk(ship, Const.PLAYER_1_SHIP_LAYER, Const.PLAYER_2_SHIP_LAYER);
             }
 
-            return true;
+            return isSunkShip;
         }
-        private void CheckShipLayerSunk(Ship s, string tagPlayer, string tagEnemy)
+        private bool CheckShipLayerSunk(Ship s, string tagPlayer, string tagEnemy)
         {
             int shipLayer = s.gameObject.layer;
 
@@ -204,7 +206,7 @@ namespace Sonn.BattleShips
 
             if (sourceCells == null || sourceCells.Count <= 0)
             {
-                return;
+                return false;
             }
 
             List<Cell> shipObjCell = new();
@@ -227,14 +229,14 @@ namespace Sonn.BattleShips
 
             if (shipObjCell.Count <= 0)
             {
-                return;
+                return false;
             }
 
             foreach (var c in shipObjCell)
             {
                 if (c != null && !c.isHit)
                 {
-                    return;
+                    return false;
                 }
             }
 
@@ -251,6 +253,8 @@ namespace Sonn.BattleShips
             s.gameObject.layer = LayerMask.NameToLayer(Const.DEAD_LAYER);
 
             Debug.Log($"Tàu {s.name} của phe {(isEnemyShip ? "Enemy" : "Player")} đã bị đánh chìm!");
+
+            return true;
         }
     }
 }
